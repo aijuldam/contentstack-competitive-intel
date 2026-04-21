@@ -1,0 +1,85 @@
+{
+  "id": "6cdce082-3c5f-40d7-8970-7e61a85e0109",
+  "competitor_id": "625ecba1-9df5-4249-a33a-e4dc5ff05784",
+  "company_profile": {
+    "name": "Bloomreach",
+    "website": "https://www.bloomreach.com",
+    "hq_location": null,
+    "founding_year": null,
+    "employee_count": null,
+    "estimated_revenue": null,
+    "public_private": null,
+    "funding_stage": null,
+    "ticker_symbol": null,
+    "investor_relations_url": null,
+    "description": null,
+    "key_products": [],
+    "target_customers": null,
+    "icp": null,
+    "geography_focus": null
+  },
+  "positioning": {
+    "primary_category": null,
+    "secondary_category": null,
+    "positioning_statement": null,
+    "key_messaging_themes": [],
+    "core_value_proposition": null,
+    "main_use_cases": [],
+    "claimed_differentiators": [],
+    "market_segment_focus": null,
+    "pricing_model_notes": null
+  },
+  "feature_launches": [],
+  "analysis": {
+    "why_customers_buy": [],
+    "likely_strengths": [],
+    "likely_weaknesses": [],
+    "where_we_win": [],
+    "where_we_lose": [],
+    "objection_handling": [],
+    "competitive_positioning_angles": [],
+    "territory_risk": "medium",
+    "territory_risk_notes": null
+  },
+  "all_sources": [],
+  "field_freshness": [
+    {
+      "field_name": "company_profile",
+      "last_updated": "2026-04-21T11:06:13.936889Z",
+      "last_confirmed": "2026-04-21T11:06:13.936889Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "positioning",
+      "last_updated": "2026-04-21T11:06:13.936889Z",
+      "last_confirmed": "2026-04-21T11:06:13.936889Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "analysis",
+      "last_updated": "2026-04-21T11:06:13.936889Z",
+      "last_confirmed": "2026-04-21T11:06:13.936889Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "feature_launches",
+      "last_updated": "2026-04-21T11:06:13.936889Z",
+      "last_confirmed": "2026-04-21T11:06:13.936889Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "all_sources",
+      "last_updated": "2026-04-21T11:06:13.936889Z",
+      "last_confirmed": "2026-04-21T11:06:13.936889Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    }
+  ],
+  "created_at": "2026-04-21T11:06:13.936734Z",
+  "updated_at": "2026-04-21T11:06:13.936734Z",
+  "version": 1
+}

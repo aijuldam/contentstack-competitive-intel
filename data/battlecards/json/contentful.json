@@ -1,0 +1,85 @@
+{
+  "id": "1c9d82ee-ea50-4389-86e3-aee6af33df98",
+  "competitor_id": "8777c701-915b-422a-921a-8eea4261371c",
+  "company_profile": {
+    "name": "Contentful",
+    "website": "https://www.contentful.com",
+    "hq_location": null,
+    "founding_year": null,
+    "employee_count": null,
+    "estimated_revenue": null,
+    "public_private": null,
+    "funding_stage": null,
+    "ticker_symbol": null,
+    "investor_relations_url": null,
+    "description": null,
+    "key_products": [],
+    "target_customers": null,
+    "icp": null,
+    "geography_focus": null
+  },
+  "positioning": {
+    "primary_category": null,
+    "secondary_category": null,
+    "positioning_statement": null,
+    "key_messaging_themes": [],
+    "core_value_proposition": null,
+    "main_use_cases": [],
+    "claimed_differentiators": [],
+    "market_segment_focus": null,
+    "pricing_model_notes": null
+  },
+  "feature_launches": [],
+  "analysis": {
+    "why_customers_buy": [],
+    "likely_strengths": [],
+    "likely_weaknesses": [],
+    "where_we_win": [],
+    "where_we_lose": [],
+    "objection_handling": [],
+    "competitive_positioning_angles": [],
+    "territory_risk": "medium",
+    "territory_risk_notes": null
+  },
+  "all_sources": [],
+  "field_freshness": [
+    {
+      "field_name": "company_profile",
+      "last_updated": "2026-04-21T11:06:18.210596Z",
+      "last_confirmed": "2026-04-21T11:06:18.210596Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "positioning",
+      "last_updated": "2026-04-21T11:06:18.210596Z",
+      "last_confirmed": "2026-04-21T11:06:18.210596Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "analysis",
+      "last_updated": "2026-04-21T11:06:18.210596Z",
+      "last_confirmed": "2026-04-21T11:06:18.210596Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "feature_launches",
+      "last_updated": "2026-04-21T11:06:18.210596Z",
+      "last_confirmed": "2026-04-21T11:06:18.210596Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    },
+    {
+      "field_name": "all_sources",
+      "last_updated": "2026-04-21T11:06:18.210596Z",
+      "last_confirmed": "2026-04-21T11:06:18.210596Z",
+      "staleness_threshold_days": 30,
+      "is_stale": false
+    }
+  ],
+  "created_at": "2026-04-21T11:06:18.210478Z",
+  "updated_at": "2026-04-21T11:06:18.210478Z",
+  "version": 1
+}

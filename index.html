@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contentstack Competitive Intelligence — Battle Cards</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e4e4ef;
+    --text-muted: #8888a0;
+    --accent: #0075ff;
+    --accent-light: #5aaeff;
+    --green: #00cec9;
+    --green-dim: #00b897;
+    --red: #fd5e53;
+    --orange: #fdcb6e;
+    --yellow: #ffeaa7;
+    --blue: #74b9ff;
+    --pink: #e84393;
+    --card-radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #12121a 0%, #0a1a30 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .header p { font-size: 13px; color: var(--text-muted); }
+  .header-right { display: flex; gap: 12px; align-items: center; }
+  .pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+  }
+  .pill.active { border-color: var(--accent); color: var(--accent-light); background: rgba(0,117,255,0.1); }
+
+  /* Tab nav */
+  .tab-nav {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px 0;
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent-light); border-bottom-color: var(--accent); }
+
+  /* Main content */
+  .main { max-width: 1400px; margin: 0 auto; padding: 32px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Cards grid */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; }
+
+  /* Competitor card */
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .comp-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .comp-card.is-us {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(0,117,255,0.08) 0%, var(--surface) 100%);
+    grid-column: 1 / -1;
+  }
+  .comp-card.is-us .comp-card-header { border-bottom-color: rgba(0,117,255,0.3); }
+  .us-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(0,117,255,0.2);
+    color: var(--accent-light);
+    border: 1px solid rgba(0,117,255,0.4);
+  }
+  .comp-card-header {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-name { font-size: 20px; font-weight: 700; }
+  .comp-category { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .risk-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .risk-low { background: rgba(0,206,201,0.15); color: var(--green); border: 1px solid rgba(0,206,201,0.3); }
+  .risk-medium { background: rgba(253,203,110,0.15); color: var(--orange); border: 1px solid rgba(253,203,110,0.3); }
+  .risk-high { background: rgba(253,94,83,0.15); color: var(--red); border: 1px solid rgba(253,94,83,0.3); }
+  .risk-critical { background: rgba(232,67,147,0.15); color: var(--pink); border: 1px solid rgba(232,67,147,0.3); }
+
+  .comp-card-body { padding: 24px; }
+  .comp-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .meta-item { }
+  .meta-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .meta-value { font-size: 14px; font-weight: 600; margin-top: 2px; }
+  .comp-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  /* Detail view */
+  .detail-view { display: none; }
+  .detail-view.active { display: block; }
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-bottom: 24px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent-light); }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .detail-header h2 { font-size: 28px; font-weight: 800; }
+  .detail-meta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* Sections */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-icon { font-size: 18px; }
+  .section-body { padding: 24px; }
+
+  /* Table */
+  .info-table { width: 100%; border-collapse: collapse; }
+  .info-table td { padding: 10px 0; font-size: 14px; vertical-align: top; }
+  .info-table td:first-child { color: var(--text-muted); width: 160px; font-weight: 500; }
+  .info-table tr + tr td { border-top: 1px solid var(--border); }
+
+  .confidence-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+  .conf-high { background: rgba(0,206,201,0.12); color: var(--green); }
+  .conf-medium { background: rgba(116,185,255,0.12); color: var(--blue); }
+  .conf-low { background: rgba(253,203,110,0.12); color: var(--orange); }
+  .conf-speculative { background: rgba(253,94,83,0.12); color: var(--red); }
+  .estimated-tag { background: rgba(255,234,167,0.12); color: var(--yellow); }
+
+  /* Lists */
+  .item-list { list-style: none; }
+  .item-list li {
+    padding: 10px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .item-list li:last-child { border-bottom: none; }
+  .item-bullet {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .win-bullet { background: var(--green); }
+  .lose-bullet { background: var(--red); }
+  .strength-bullet { background: var(--green); }
+  .weakness-bullet { background: var(--orange); }
+
+  /* Feature launches */
+  .launch-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .launch-card:last-child { margin-bottom: 0; }
+  .launch-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; }
+  .launch-name { font-weight: 700; font-size: 15px; }
+  .importance-badge {
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .imp-critical { background: rgba(232,67,147,0.15); color: var(--pink); }
+  .imp-high { background: rgba(253,94,83,0.15); color: var(--red); }
+  .imp-medium { background: rgba(253,203,110,0.15); color: var(--orange); }
+  .imp-low { background: rgba(116,185,255,0.15); color: var(--blue); }
+  .launch-summary { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  .launch-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; }
+  .launch-meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* Objection handling */
+  .objection-card {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .objection-card:last-child { margin-bottom: 0; }
+  .objection-q { font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--accent-light); }
+  .objection-a { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* Sources table */
+  .sources-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sources-table th {
+    text-align: left;
+    padding: 10px 12px;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sources-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .sources-table a { color: var(--blue); text-decoration: none; }
+  .sources-table a:hover { text-decoration: underline; }
+
+  /* Digest tab */
+  .digest-section { margin-bottom: 32px; }
+  .digest-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .change-row {
+    display: grid;
+    grid-template-columns: 120px 120px 80px 1fr;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+  }
+  .change-type {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .ct-added { background: rgba(0,206,201,0.12); color: var(--green); }
+  .ct-updated { background: rgba(116,185,255,0.12); color: var(--blue); }
+
+  .action-item {
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  /* Comparison table */
+  .comparison-intro {
+    margin-bottom: 32px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+  }
+  .comparison-intro h2 { font-size: 22px; margin-bottom: 8px; }
+  .comparison-intro p { color: var(--text-muted); font-size: 14px; }
+
+  .cmp-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .cmp-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .cmp-table thead th {
+    position: sticky;
+    top: 100px;
+    background: var(--surface2);
+    z-index: 10;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .cmp-table thead th:first-child {
+    width: 180px;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .cmp-table thead th .th-sub {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .cmp-table thead th.cs-col {
+    background: linear-gradient(180deg, rgba(0,117,255,0.15) 0%, var(--surface2) 100%);
+    border-top: 3px solid var(--accent);
+    z-index: 10;
+  }
+  .cmp-table tbody td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .cmp-table tbody td:first-child {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .cmp-table tbody td.cs-col {
+    background: rgba(0,117,255,0.04);
+  }
+  .cmp-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  .cmp-table tbody tr:hover td.cs-col { background: rgba(0,117,255,0.08); }
+  .cmp-table .section-row td {
+    background: var(--surface2) !important;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-light);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .cmp-check { color: var(--green); font-weight: 700; }
+  .cmp-cross { color: var(--red); opacity: 0.7; }
+  .cmp-partial { color: var(--orange); }
+  .cmp-highlight {
+    background: rgba(0,117,255,0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--accent-light);
+    font-weight: 600;
+  }
+  .cmp-note {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .analyst-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .score-high { background: rgba(0,206,201,0.12); color: var(--green); }
+  .score-mid { background: rgba(253,203,110,0.12); color: var(--orange); }
+  .score-low { background: rgba(116,185,255,0.12); color: var(--blue); }
+  .star { color: var(--orange); font-size: 12px; }
+
+  .cmp-legend {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .cmp-legend span { display: flex; align-items: center; gap: 6px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .comp-meta { grid-template-columns: 1fr; }
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .main { padding: 16px; }
+    .change-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">CS</div>
+      <div>
+        <h1>Contentstack Competitive Intelligence</h1>
+        <p>AI-powered battle cards for product marketing</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="pill active" id="pill-count">8 Competitors Monitored</span>
+      <span class="pill" id="pill-updated">Updated Apr 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="comparison">CMS Comparison</button>
+  <button class="tab-btn" data-tab="digest">Weekly Digest</button>
+</div>
+
+<div class="main">
+  <!-- OVERVIEW TAB -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="cards-grid" id="cards-grid"></div>
+  </div>
+
+  <!-- DETAIL VIEW (injected per competitor) -->
+  <div class="detail-view" id="detail-view"></div>
+
+  <!-- COMPARISON TAB -->
+  <div class="tab-content" id="tab-comparison">
+
+    <div class="comparison-intro">
+      <h2>Headless CMS &amp; Composable DXP Comparison</h2>
+      <p>Side-by-side comparison of Contentstack, Contentful, Sanity, Storyblok, and Hygraph across the enterprise headless CMS and composable DXP landscape. Rows marked <span class="cmp-highlight">Contentstack advantage</span> indicate where Contentstack leads.</p>
+    </div>
+
+    <div class="cmp-table-wrap">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="cs-col">Contentstack<span class="th-sub">contentstack.com</span></th>
+            <th>Contentful<span class="th-sub">contentful.com</span></th>
+            <th>Sanity<span class="th-sub">sanity.io</span></th>
+            <th>Storyblok<span class="th-sub">storyblok.com</span></th>
+            <th>Hygraph<span class="th-sub">hygraph.com</span></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- COMPANY OVERVIEW -->
+          <tr class="section-row"><td colspan="6">Company Overview</td></tr>
+          <tr>
+            <td>Founded</td>
+            <td class="cs-col">2018 (spun out of Raw Engineering)</td>
+            <td>2013</td>
+            <td>2017</td>
+            <td>2017</td>
+            <td>2017 (GraphCMS rebranded 2022)</td>
+          </tr>
+          <tr>
+            <td>HQ</td>
+            <td class="cs-col">San Francisco, CA<span class="cmp-note">+ London, Amsterdam, Austin</span></td>
+            <td>San Francisco, CA<span class="cmp-note">Berlin origin</span></td>
+            <td>San Francisco, CA<span class="cmp-note">Oslo origin</span></td>
+            <td>Linz, Austria<span class="cmp-note">+ Austin, London</span></td>
+            <td>Berlin, Germany</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td class="cs-col">Private — Series D (~$169M raised)<span class="cmp-note">Strong enterprise backing</span></td>
+            <td>Private — Series F (~$330M)<span class="cmp-note">PE-backed (Advent International)</span></td>
+            <td>Private — Series C (~$132M)</td>
+            <td>Private — Series B (~$80M)</td>
+            <td>Private — Series A (~$35M)</td>
+          </tr>
+          <tr>
+            <td>Core Business</td>
+            <td class="cs-col"><span class="cmp-highlight">Composable DXP</span><span class="cmp-note">Headless CMS + Personalize + Automate + Launch + Marketplace</span></td>
+            <td>Headless CMS + Studio<span class="cmp-note">Retrofitting enterprise features</span></td>
+            <td>Structured Content Platform<span class="cmp-note">Developer-first, GROQ queries</span></td>
+            <td>Visual Headless CMS<span class="cmp-note">Real-time visual editor</span></td>
+            <td>Federated Content Platform<span class="cmp-note">GraphQL-native, content federation</span></td>
+          </tr>
+
+          <!-- ARCHITECTURE -->
+          <tr class="section-row"><td colspan="6">Architecture &amp; Content Modeling</td></tr>
+          <tr>
+            <td>API Type</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> REST + GraphQL<span class="cmp-note">+ CDN delivery</span></td>
+            <td><span class="cmp-check">&#10003;</span> REST + GraphQL</td>
+            <td><span class="cmp-check">&#10003;</span> REST + GROQ + GraphQL</td>
+            <td><span class="cmp-check">&#10003;</span> REST + GraphQL</td>
+            <td><span class="cmp-check">&#10003;</span> GraphQL-native + REST</td>
+          </tr>
+          <tr>
+            <td>Content Branching</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> <strong>Branch-based workflows</strong><span class="cmp-note">Unique: dev-parity content branching</span></td>
+            <td><span class="cmp-cross">&#10007;</span> No native branching</td>
+            <td><span class="cmp-cross">&#10007;</span> Datasets (limited branching)</td>
+            <td><span class="cmp-cross">&#10007;</span> No branching</td>
+            <td><span class="cmp-cross">&#10007;</span> Environments only</td>
+          </tr>
+          <tr>
+            <td>Real-time Collab</td>
+            <td class="cs-col"><span class="cmp-partial">&#x25cb;</span> In-editor comments</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Basic</td>
+            <td><span class="cmp-check">&#10003;</span> Real-time live collaboration</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Basic</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Basic</td>
+          </tr>
+          <tr>
+            <td>Multi-tenancy</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> Stacks / organizations</td>
+            <td><span class="cmp-check">&#10003;</span> Organizations / spaces</td>
+            <td><span class="cmp-check">&#10003;</span> Projects / orgs</td>
+            <td><span class="cmp-check">&#10003;</span> Spaces / orgs</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Projects</td>
+          </tr>
+
+          <!-- DEVELOPER EXPERIENCE -->
+          <tr class="section-row"><td colspan="6">Developer Experience</td></tr>
+          <tr>
+            <td>SDK Support</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> JS, React, Next.js, iOS, Android</td>
+            <td><span class="cmp-check">&#10003;</span> JS, Python, Ruby, .NET, iOS, Android</td>
+            <td><span class="cmp-check">&#10003;</span> JS, React, Next.js, GROQ</td>
+            <td><span class="cmp-check">&#10003;</span> JS, Vue, Nuxt, React</td>
+            <td><span class="cmp-partial">&#x25cb;</span> JS, GraphQL clients</td>
+          </tr>
+          <tr>
+            <td>Docs Quality</td>
+            <td class="cs-col"><span class="analyst-score score-mid">Good</span></td>
+            <td><span class="analyst-score score-high">Excellent</span><span class="cmp-note">Largest community resources</span></td>
+            <td><span class="analyst-score score-high">Excellent</span><span class="cmp-note">GROQ playground, interactive docs</span></td>
+            <td><span class="analyst-score score-mid">Good</span></td>
+            <td><span class="analyst-score score-mid">Good</span></td>
+          </tr>
+          <tr>
+            <td>Marketplace</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> <strong>300+ apps</strong><span class="cmp-note">Salesforce, Adobe, SAP, Shopify</span></td>
+            <td><span class="cmp-check">&#10003;</span> 300+ apps</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Plugins (smaller)</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Technology partners</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Limited</td>
+          </tr>
+
+          <!-- VISUAL EDITING -->
+          <tr class="section-row"><td colspan="6">Visual Editing &amp; Editor Experience</td></tr>
+          <tr>
+            <td>Visual Editor</td>
+            <td class="cs-col"><span class="cmp-partial">&#x25cb;</span> Live Preview + Page Builder<span class="cmp-note">Improving rapidly</span></td>
+            <td><span class="cmp-check">&#10003;</span> Contentful Studio<span class="cmp-note">GA 2024; strong component builder</span></td>
+            <td><span class="cmp-check">&#10003;</span> Sanity Presentation<span class="cmp-note">Real-time visual editing overlay</span></td>
+            <td><span class="cmp-check">&#10003;</span> <strong>Real-time visual editor</strong><span class="cmp-note">Category standout; best-in-class UX</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span> Content preview</td>
+          </tr>
+          <tr>
+            <td>Editor UX</td>
+            <td class="cs-col"><span class="cmp-partial">&#x25cb;</span> Functional; learning curve<span class="cmp-note">Not the strongest non-technical UX</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span> Good with Studio; complex otherwise</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Studio requires setup</td>
+            <td><span class="cmp-check">&#10003;</span> Best non-technical editor UX</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Developer-oriented</td>
+          </tr>
+
+          <!-- AI -->
+          <tr class="section-row"><td colspan="6">AI Capabilities</td></tr>
+          <tr>
+            <td>AI Writing</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> AI Assistant (in-editor)</td>
+            <td><span class="cmp-check">&#10003;</span> Content AI + AI Actions</td>
+            <td><span class="cmp-check">&#10003;</span> AI Assist</td>
+            <td><span class="cmp-check">&#10003;</span> Storyblok AI</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Limited AI features</td>
+          </tr>
+          <tr>
+            <td>AI Workflows</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> <strong>Contentstack Automate</strong><span class="cmp-note">No-code content workflow automation</span></td>
+            <td><span class="cmp-check">&#10003;</span> AI Actions (batch processing)</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Custom via plugins</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Limited</td>
+            <td><span class="cmp-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Personalization</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> <strong>Contentstack Personalize</strong><span class="cmp-note">Native AI personalization engine</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span> Via Ninetailed (acquired)<span class="cmp-note">Integration still maturing</span></td>
+            <td><span class="cmp-cross">&#10007;</span> No native personalization</td>
+            <td><span class="cmp-cross">&#10007;</span></td>
+            <td><span class="cmp-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Analytics / Intel</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> <strong>Contentstack Pulse</strong><span class="cmp-note">AI content intelligence</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span> Basic analytics</td>
+            <td><span class="cmp-cross">&#10007;</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span> Basic</td>
+            <td><span class="cmp-cross">&#10007;</span></td>
+          </tr>
+
+          <!-- ENTERPRISE FEATURES -->
+          <tr class="section-row"><td colspan="6">Enterprise Features</td></tr>
+          <tr>
+            <td>SLA</td>
+            <td class="cs-col"><span class="cmp-highlight">99.99% uptime SLA</span></td>
+            <td>99.9% uptime SLA<span class="cmp-note">10x lower reliability commitment</span></td>
+            <td>Not published</td>
+            <td>Not published</td>
+            <td>Not published</td>
+          </tr>
+          <tr>
+            <td>Roles &amp; Perms</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> Granular RBAC</td>
+            <td><span class="cmp-check">&#10003;</span> Granular RBAC</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Growing</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Growing</td>
+            <td><span class="cmp-partial">&#x25cb;</span> Basic</td>
+          </tr>
+          <tr>
+            <td>Audit Logs</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> Full audit trail</td>
+            <td><span class="cmp-check">&#10003;</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span> Limited</td>
+            <td><span class="cmp-partial">&#x25cb;</span></td>
+            <td><span class="cmp-partial">&#x25cb;</span></td>
+          </tr>
+          <tr>
+            <td>Deployment</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> <strong>Contentstack Launch</strong><span class="cmp-note">Edge-native frontend deployment</span></td>
+            <td><span class="cmp-cross">&#10007;</span> No native hosting<span class="cmp-note">Use Vercel/Netlify</span></td>
+            <td><span class="cmp-cross">&#10007;</span> No native hosting</td>
+            <td><span class="cmp-cross">&#10007;</span> No native hosting</td>
+            <td><span class="cmp-cross">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Data Residency</td>
+            <td class="cs-col"><span class="cmp-check">&#10003;</span> Multi-region</td>
+            <td><span class="cmp-check">&#10003;</span> EU &amp; US regions</td>
+            <td><span class="cmp-check">&#10003;</span> EU &amp; US</td>
+            <td><span class="cmp-check">&#10003;</span> EU &amp; US</td>
+            <td><span class="cmp-partial">&#x25cb;</span> EU region</td>
+          </tr>
+
+          <!-- PRICING -->
+          <tr class="section-row"><td colspan="6">Pricing &amp; Market</td></tr>
+          <tr>
+            <td>Free Tier</td>
+            <td class="cs-col"><span class="cmp-cross">&#10007;</span> Enterprise-only pricing</td>
+            <td><span class="cmp-check">&#10003;</span> Free + team plans from ~$300/mo</td>
+            <td><span class="cmp-check">&#10003;</span> Free + team from $15/user/mo</td>
+            <td><span class="cmp-check">&#10003;</span> Free community tier</td>
+            <td><span class="cmp-check">&#10003;</span> Free tier</td>
+          </tr>
+          <tr>
+            <td>Pricing Model</td>
+            <td class="cs-col">Enterprise contract<span class="cmp-note">Tiered by content types, locales, API calls</span></td>
+            <td>Usage-based + tiers<span class="cmp-note">Content types, locales, API calls</span></td>
+            <td>Usage-based<span class="cmp-note">API requests + storage</span></td>
+            <td>User-based + tiers</td>
+            <td>Operations-based</td>
+          </tr>
+          <tr>
+            <td>SMB Accessible</td>
+            <td class="cs-col"><span class="cmp-cross">&#10007;</span> Enterprise-first</td>
+            <td><span class="cmp-check">&#10003;</span> Team plans accessible</td>
+            <td><span class="cmp-check">&#10003;</span> Developer-friendly pricing</td>
+            <td><span class="cmp-check">&#10003;</span> Mid-market accessible</td>
+            <td><span class="cmp-check">&#10003;</span></td>
+          </tr>
+
+          <!-- MARKET POSITION -->
+          <tr class="section-row"><td colspan="6">Market Position &amp; Analyst Ratings</td></tr>
+          <tr>
+            <td>Forrester Wave</td>
+            <td class="cs-col"><span class="analyst-score score-high">Leader</span><span class="cmp-note">Agile CMS Wave 2023</span></td>
+            <td><span class="analyst-score score-high">Leader</span><span class="cmp-note">Strongest overall market position</span></td>
+            <td><span class="analyst-score score-mid">Strong Performer</span></td>
+            <td><span class="analyst-score score-mid">Contender</span></td>
+            <td><span class="analyst-score score-low">Not evaluated</span></td>
+          </tr>
+          <tr>
+            <td>G2 Score</td>
+            <td class="cs-col"><span class="star">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <strong>4.5/5</strong><span class="cmp-note">High enterprise NPS</span></td>
+            <td><span class="star">&#9733;&#9733;&#9733;&#9733;</span> <strong>4.3/5</strong><span class="cmp-note">Largest review volume</span></td>
+            <td><span class="star">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <strong>4.7/5</strong><span class="cmp-note">Developer NPS leader</span></td>
+            <td><span class="star">&#9733;&#9733;&#9733;&#9733;&#9733;</span> <strong>4.5/5</strong><span class="cmp-note">Editor UX standout</span></td>
+            <td><span class="star">&#9733;&#9733;&#9733;&#9733;</span> <strong>4.4/5</strong></td>
+          </tr>
+          <tr>
+            <td>Key Customers</td>
+            <td class="cs-col"><strong>IKEA, Walmart, Mattel, Shell, Sega, Mitsubishi, PokerStars</strong></td>
+            <td><strong>Spotify, Nike, Vodafone, Siemens, Staples</strong></td>
+            <td><strong>Puma, Figma, Cloudflare, Conde Nast, Riot Games</strong></td>
+            <td><strong>Adidas, Deliveroo, Renault, Oatly</strong></td>
+            <td><strong>Shure, Castore, Telenor</strong></td>
+          </tr>
+          <tr>
+            <td>Strategic Outlook</td>
+            <td class="cs-col"><span class="cmp-highlight">Full composable DXP</span><span class="cmp-note">Only headless CMS with native personalization + deployment + AI ops</span></td>
+            <td>Enterprise push<span class="cmp-note">Studio + Ninetailed personalization maturing</span></td>
+            <td>Developer darling<span class="cmp-note">Moving upmarket; Studio customizability moat</span></td>
+            <td>Visual editor moat<span class="cmp-note">Strongest mid-market and agency play</span></td>
+            <td>Federation niche<span class="cmp-note">GraphQL federation differentiates in complex architectures</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cmp-legend">
+      <span><span class="cmp-check">&#10003;</span> Full support</span>
+      <span><span class="cmp-partial">&#x25cb;</span> Partial / limited</span>
+      <span><span class="cmp-cross">&#10007;</span> Not available</span>
+      <span><span class="cmp-highlight">Contentstack advantage</span></span>
+      <span style="font-style:italic">Note: Analyst ratings and G2 scores are directional estimates. Verify with current sources before use in sales conversations.</span>
+    </div>
+
+  </div>
+
+  <!-- DIGEST TAB -->
+  <div class="tab-content" id="tab-digest">
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f4cb;</span> Weekly Competitive Intelligence Digest</div>
+      <div class="section-body">
+        <p style="color:var(--text-muted);margin-bottom:24px;">Seed data — run the pipeline to populate with real-time intelligence. Period: last 7 days &mdash; monitoring 8 competitors across the headless CMS and composable DXP market.</p>
+
+        <div class="digest-section">
+          <h3>Contentful</h3>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>critical</span><span style="color:var(--text-muted)">Contentful Studio GA — visual page builder enabling marketers to compose pages without developer involvement [CRITICAL]</span></div>
+          <div class="change-row" style="padding-left:24px"><a href="https://www.contentful.com/blog/" target="_blank" style="color:var(--blue);font-size:12px;text-decoration:none">&#x1f517; Contentful Blog</a></div>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>high</span><span style="color:var(--text-muted)">AI Actions — automated content processing, tagging, translation, and summarization within the CMS</span></div>
+          <div class="change-row"><span class="change-type ct-updated">updated</span><span>positioning</span><span>enterprise</span><span style="color:var(--text-muted)">Contentful accelerating enterprise push — Ninetailed personalization integration deepening; Studio adoption growing in Q1 2026</span></div>
+        </div>
+
+        <div class="digest-section">
+          <h3>Sanity</h3>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>high</span><span style="color:var(--text-muted)">Sanity AI Assist GA — customizable AI writing actions per content type embedded in Studio [HIGH]</span></div>
+          <div class="change-row" style="padding-left:24px"><a href="https://www.sanity.io/blog" target="_blank" style="color:var(--blue);font-size:12px;text-decoration:none">&#x1f517; Sanity Blog</a></div>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>high</span><span style="color:var(--text-muted)">Sanity Presentation (Visual Editing) — live preview overlay for editors, closing the visual editing gap vs Storyblok</span></div>
+          <div class="change-row"><span class="change-type ct-updated">updated</span><span>market_position</span><span>enterprise</span><span style="color:var(--text-muted)">Sanity deepening Shopify Connect for composable commerce — strongest headless CMS e-commerce story outside Contentstack</span></div>
+        </div>
+
+        <div class="digest-section">
+          <h3>Storyblok</h3>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>high</span><span style="color:var(--text-muted)">Storyblok AI — native content generation, translation, and summarization in the visual editor [HIGH]</span></div>
+          <div class="change-row" style="padding-left:24px"><a href="https://www.storyblok.com/blog" target="_blank" style="color:var(--blue);font-size:12px;text-decoration:none">&#x1f517; Storyblok Blog</a></div>
+          <div class="change-row"><span class="change-type ct-updated">updated</span><span>company_profile</span><span>growth</span><span style="color:var(--text-muted)">Storyblok expanding North America sales motion — new Austin office and US enterprise push beginning</span></div>
+        </div>
+
+        <div class="digest-section">
+          <h3>Contentstack (Our Updates)</h3>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>critical</span><span style="color:var(--text-muted)">Contentstack Personalize GA — native AI personalization engine, no third-party required [CRITICAL]</span></div>
+          <div class="change-row"><span class="change-type ct-added">added</span><span>product_launch</span><span>high</span><span style="color:var(--text-muted)">Contentstack Launch — edge-native frontend deployment; compete with Vercel/Netlify as part of the composable DXP stack</span></div>
+          <div class="change-row"><span class="change-type ct-updated">updated</span><span>customer</span><span>new</span><span style="color:var(--text-muted)">New enterprise wins: add to sales collateral as fresh proof points for CMS + Personalize + Launch bundle</span></div>
+        </div>
+
+        <div class="digest-section">
+          <h3>Action Items</h3>
+          <div class="action-item">Update Contentful battle card: Studio GA + AI Actions significantly close the marketer-friendliness gap — reassess visual editing positioning</div>
+          <div class="action-item">Monitor Sanity enterprise push: governance and workflow announcements could accelerate upmarket threat — watch job postings for enterprise PM / sales roles</div>
+          <div class="action-item">Contentstack Personalize: ensure sales is leading with this vs Contentful's Ninetailed — native vs acquired integration is a key differentiator</div>
+          <div class="action-item">Track Storyblok North America expansion: as they move upmarket, direct Contentstack competition will increase in the mid-to-large enterprise segment</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// -- DATA (loaded from JSON files at build time, embedded here for static hosting) --
+const competitors = {};
+
+// Contentstack (us)
+competitors.contentstack = {"name":"Contentstack","slug":"contentstack","website":"https://www.contentstack.com","risk":"us","is_us":true,"category":"Headless CMS / Composable DXP","secondary_category":"Digital Experience Platform","hq":"San Francisco, CA","founded":"2018 (spun out of Raw Engineering)","employees":{"value":"~700-900","estimated":true,"confidence":"medium"},"revenue":{"value":"Not disclosed","estimated":false,"confidence":"low"},"status":"Private","ticker":null,"funding":"Series D (~$169M raised)","key_customers":["IKEA","Walmart","Mattel","Shell","Mitsubishi","Sega","Nissan","PokerStars"],"description":"Contentstack is an enterprise headless CMS and composable DXP, founded in 2018 (spun out of Raw Engineering). It powers omnichannel content delivery for large enterprises via an API-first, composable architecture. Known for enterprise-grade reliability, AI content operations, and a 300+ app Marketplace.","positioning":"The composable DXP built for enterprise digital teams who can't afford content chaos.","value_prop":"Deliver content to any channel, at enterprise scale, with AI-powered workflows and zero lock-in.","segment_focus":"Enterprise and large mid-market digital teams — media, retail, financial services, healthcare.","pricing":"Enterprise contract pricing (not public). Tiered by content types, locales, and API calls.","key_products":["CMS: Headless content management with visual page builder and branch-based workflows","Automate: No-code content workflow automation","Pulse: AI-powered content intelligence and analytics","Launch: Edge-native frontend deployment (Netlify/Vercel alternative)","Personalize: AI-driven content personalization engine","AI Assistant: In-editor AI writing and generation","Marketplace: 300+ integrations with enterprise tech stack"],"target_customers":"Enterprise digital teams managing large content operations across multiple brands, regions, and channels.","geography":"Global. Offices in San Francisco, London, Amsterdam, Austin. Customers across North America, Europe, and APAC.","messaging_themes":["Composable DXP — best-of-breed without lock-in","AI content operations at enterprise scale","Built for the enterprise, not retrofitted","Content everywhere, chaos nowhere"],"differentiators":["True composable DXP with 300+ Marketplace integrations","Branch-based content workflows (dev parity — unique in market)","AI content operations: Pulse, Automate, AI Assistant, Personalize","99.99% uptime SLA with enterprise support","Named Leader in Forrester Wave for Agile CMS"],"feature_launches":[{"name":"Contentstack Personalize","date":"2025-03-01","summary":"AI-driven personalization engine enabling digital teams to deliver individually tailored content experiences without third-party personalization tools.","category":"AI / Personalization","importance":"critical","confidence":"high","source":"https://www.contentstack.com/blog","persona":"Digital marketers, experience engineers"},{"name":"Contentstack Launch","date":"2024-11-01","summary":"Edge-native frontend deployment platform integrated with the CMS — competes directly with Netlify and Vercel for composable frontend hosting.","category":"Infrastructure / Deployment","importance":"high","confidence":"high","source":"https://www.contentstack.com/launch","persona":"Frontend engineers, DevOps"},{"name":"Contentstack AI Assistant","date":"2025-06-01","summary":"In-CMS AI writing and content generation assistant, reducing time-to-publish for editorial teams.","category":"AI / Productivity","importance":"high","confidence":"high","source":"https://www.contentstack.com/blog","persona":"Content editors, marketers"}],"why_buy":["True enterprise-grade headless CMS — built for scale, not retrofitted","Composable DXP with 300+ integrations removes vendor lock-in","AI-powered content operations reduce manual work","99.99% uptime SLA and dedicated enterprise support","Branch-based workflows give dev teams content-parity with code"],"strengths":["Strongest enterprise feature set in headless CMS category","Composable architecture with largest Marketplace (300+)","AI-native roadmap: Pulse, Automate, Personalize, AI Assistant","Proven at scale: IKEA, Walmart, Mattel, Shell","Named Leader in Forrester Wave for Agile CMS"],"weaknesses":["Less developer community recognition than Contentful","Enterprise-only pricing limits accessibility for startups/SMBs","Launch product is newer and less established than Vercel/Netlify","UI can have learning curve for non-technical editors"],"where_we_win":[],"where_we_lose":[],"objections":[],"positioning_angles":["Enterprise-first: Contentful started developer-first and is retrofitting enterprise. Contentstack was built enterprise-first.","Composable DXP vs pure CMS: Contentstack delivers the full DXP stack (CMS + Automate + Personalize + Launch + Marketplace)","AI content operations moat: Pulse, Automate, and AI Assistant are production-ready, not roadmap","Reliability: 99.99% SLA vs Contentful's 99.9% — matters at enterprise scale","Lead with logos: IKEA, Walmart, Shell, Mattel — proof of enterprise-grade delivery"],"risk_notes":"","sources":[{"title":"Contentstack Homepage","url":"https://www.contentstack.com","type":"official_website","confidence":"high"},{"title":"Contentstack - About","url":"https://www.contentstack.com/company","type":"official_website","confidence":"high"}]};
+
+// Contentful
+competitors.contentful = {"name":"Contentful","slug":"contentful","website":"https://www.contentful.com","risk":"critical","category":"Headless CMS / Content Platform","secondary_category":"Digital Experience Platform","hq":"San Francisco, CA (Berlin origin)","founded":"2013","employees":{"value":"~800-1000","estimated":true,"confidence":"medium"},"revenue":{"value":"~$200-300M ARR estimated","estimated":true,"confidence":"low"},"status":"Private","ticker":null,"funding":"Series F (~$330M raised)","key_customers":["Spotify","Nike","Vodafone","Siemens","Staples","British Council","Telus"],"description":"Contentful is the market-leading headless CMS with the largest developer community. API-first content platform used by 30,000+ organizations. Strong in mid-market and increasingly enterprise. Acquired by private equity (Advent International) in 2023.","positioning":"The content platform that powers digital experiences for the world's best brands.","value_prop":"Centralize your content in one flexible platform and deliver it everywhere your customers are.","segment_focus":"Developer-first origin; now pushing heavily upmarket to enterprise with Contentful Studio and enterprise plans.","pricing":"Free tier, team plans from ~$300/mo, enterprise custom pricing. Usage-based on content types, locales, API calls.","key_products":["Content API: RESTful and GraphQL content delivery","Contentful Studio: Visual page builder for marketers","Contentful Compose: Streamlined entry creation for editors","Apps Marketplace: 300+ integrations","Content AI: AI writing assistance built into the editor","AI Actions: Automated content processing workflows"],"target_customers":"Mid-market to enterprise digital teams, developers building content-driven applications, and marketers needing visual content management.","geography":"Global. Offices in San Francisco, Berlin, London, Denver. Strongest in North America and Europe.","messaging_themes":["The composable content platform","Content everywhere — one platform, infinite channels","Developer-first with marketer-friendly tools","AI-powered content operations"],"differentiators":["Largest headless CMS developer community and ecosystem","30,000+ organizations — most-deployed headless CMS","GraphQL and REST APIs out of the box","Contentful Studio for visual editing without dev dependency","Strong partner network and agency ecosystem"],"feature_launches":[{"name":"AI Actions","date":"2025-01-01","summary":"Automated AI workflows for content processing, tagging, translation, and summarization within the CMS.","category":"AI / Automation","importance":"critical","confidence":"high","source":"https://www.contentful.com/blog","persona":"Content operations teams, developers"},{"name":"Contentful Studio GA","date":"2024-09-01","summary":"Visual page builder with component library enabling marketers to compose pages without developer involvement.","category":"Visual Editing","importance":"high","confidence":"high","source":"https://www.contentful.com/blog","persona":"Marketers, content editors"}],"why_buy":["Largest developer community — thousands of tutorials, integrations, and agency partners","30,000+ organizations create procurement confidence ('safe choice')","Contentful Studio bridges developer and marketer workflows","GraphQL API is best-in-class for complex content queries","Extensive marketplace with 300+ pre-built integrations"],"strengths":["Market leader brand — default enterprise headless CMS choice","Largest developer ecosystem with the most community resources","GraphQL support is a significant technical differentiator","Contentful Studio enables visual editing at scale","PE backing (Advent International) means long-term investment"],"weaknesses":["Enterprise features feel bolted on — platform was designed developer-first","Pricing is high at scale; complex overage billing frustrates enterprise teams","No native personalization engine (Ninetailed integration still maturing)","No native deployment/hosting (requires separate CDN/Vercel/Netlify)","Governance and workflow tools weaker than legacy CMS platforms"],"where_we_win":["Contentstack was built enterprise-first. Contentful retrofitted enterprise features onto a developer-first product — the seams show in workflows, governance, and support models.","AI-native product: Contentstack Pulse, Automate, and Personalize are production AI products. Contentful AI Actions are newer and less comprehensive.","Contentstack Launch provides edge-native frontend deployment as part of the DXP stack. Contentful has no hosting layer.","Contentstack Personalize delivers native AI personalization. Contentful requires a third-party integration (Ninetailed, which Contentful acquired but has not fully integrated).","Contentstack's 99.99% SLA vs Contentful's 99.9% — a 10x reliability difference that matters for enterprise procurement.","Superior enterprise support model with dedicated success teams vs Contentful's tiered support.","Branch-based content workflows are unique to Contentstack and beloved by enterprise dev teams."],"where_we_lose":["Contentful's brand recognition among developers is significantly larger — it's the 'default choice'","Contentful has 30,000+ organizations deployed vs Contentstack's hundreds of enterprise accounts","Developer community resources (tutorials, forums, third-party libraries) are substantially more numerous","Contentful's GraphQL API is technically superior for complex content queries","PE backing and scale give Contentful financial stability and R&D budget"],"objections":[{"q":"Everyone uses Contentful — it's the safe choice","a":"Contentful is the default developer choice. For enterprise digital teams managing complex operations, 'default' isn't enough. Contentstack's customers — IKEA, Walmart, Shell — chose us because we were built enterprise-first. We don't retrofit enterprise features; we designed for them. Ask Contentful if they have branch-based workflows, a native personalization engine, or an edge-native deployment platform."},{"q":"Contentful has more integrations and a bigger ecosystem","a":"Both platforms have 300+ Marketplace integrations. The difference is that Contentstack's composable DXP includes native AI personalization, workflow automation, and edge deployment — capabilities you'd otherwise need three more vendors to replicate on Contentful."},{"q":"Contentful is cheaper","a":"Contentful's listed pricing is lower, but enterprise TCO tells a different story. Add third-party personalization, a deployment platform, and workflow automation tools — all of which Contentstack includes natively — and the comparison shifts."}],"positioning_angles":["Enterprise-first vs developer-first: Frame Contentful as a developer tool that grew up, vs Contentstack which was designed for enterprise from day one","Full DXP stack: Contentstack = CMS + Personalize + Automate + Launch + Pulse. Contentful = CMS + bolt-ons.","AI completeness: Contentstack's AI products are broader and more production-ready","Reliability: 99.99% vs 99.9% SLA — use in enterprise procurement conversations","WATCH: Contentful Studio evolution and Ninetailed personalization integration pace"],"risk_notes":"Contentful is the HIGHEST priority competitive threat — the market-leading headless CMS with the largest developer community. Their move upmarket with Studio and AI Actions directly challenges Contentstack's enterprise territory. Monitor Studio GA adoption, Ninetailed personalization integration depth, and any enterprise-focused pricing changes.","sources":[{"title":"Contentful Homepage","url":"https://www.contentful.com","type":"official_website","confidence":"high"},{"title":"Contentful Pricing","url":"https://www.contentful.com/pricing/","type":"pricing_page","confidence":"high"},{"title":"Contentful Blog","url":"https://www.contentful.com/blog/","type":"blog_post","confidence":"high"}]};
+
+// Sanity
+competitors.sanity = {"name":"Sanity","slug":"sanity","website":"https://www.sanity.io","risk":"high","category":"Headless CMS / Structured Content Platform","secondary_category":"Developer-First Content Platform","hq":"San Francisco, CA (Oslo origin)","founded":"2017","employees":{"value":"~300-400","estimated":true,"confidence":"medium"},"revenue":{"value":"Not disclosed","estimated":false,"confidence":"low"},"status":"Private","ticker":null,"funding":"Series C (~$132M raised)","key_customers":["Puma","Figma","Cloudflare","Conde Nast","Skims","Riot Games"],"description":"Sanity is a developer-first headless CMS built around a real-time, collaborative content lake. Sanity Studio is fully customizable with React. Strong in e-commerce, media, and developer-built digital experiences. Known for its composable, flexible data model and GROQ query language.","positioning":"The most flexible content operating system for digital teams who want to move fast.","value_prop":"Treat content as data — a real-time, queryable content lake with a fully customizable editing experience.","segment_focus":"Developer-first, strong in high-growth companies and agencies. Moving upmarket to larger enterprises.","pricing":"Free tier, team plans from $15/user/mo, enterprise custom pricing. API usage-based.","key_products":["Content Lake: Real-time document store with GROQ query language","Sanity Studio: Fully customizable React-based editing environment","Sanity Connect: Native integrations with Shopify, Vercel, Netlify","AI Assist: In-editor AI content generation and automation","Sanity Presentation: Visual editing and live preview layer"],"target_customers":"Developers and digital product teams at e-commerce, media, SaaS, and consumer brands who need a highly flexible CMS.","geography":"Global. Oslo and San Francisco headquarters. Strong in North America, Nordics, and UK.","messaging_themes":["Structured content as data — not documents","Fully customizable Studio built with React","Real-time collaboration for content teams","AI Assist for faster content creation"],"differentiators":["GROQ query language gives unprecedented content query flexibility","Fully programmable Studio — customize every field, view, and workflow","Real-time collaboration and live content updates","Content Lake architecture enables new content use cases","Best-in-class Shopify and e-commerce integrations"],"feature_launches":[{"name":"AI Assist","date":"2024-06-01","summary":"AI writing and content automation embedded in Sanity Studio, with customizable AI actions per content type.","category":"AI / Productivity","importance":"high","confidence":"high","source":"https://www.sanity.io/blog","persona":"Content editors, developers"},{"name":"Sanity Presentation (Visual Editing)","date":"2024-03-01","summary":"Live preview and visual editing overlay that lets editors see content changes in context without leaving the Studio.","category":"Visual Editing","importance":"high","confidence":"high","source":"https://www.sanity.io/blog","persona":"Content editors, UX designers"}],"why_buy":["Most flexible content data model — GROQ queries go beyond what GraphQL alone enables","Fully customizable Studio — teams can build their exact editorial workflow","Real-time collaboration and live content updates are unique in the market","Best developer experience for content-driven React/Next.js applications","Strong Shopify integration for composable commerce"],"strengths":["GROQ query language is technically unmatched for content querying","Fully customizable Studio differentiates from all other headless CMS","Real-time content collaboration is unique","Developer-beloved: top NPS scores in the category","Strong Shopify Connect gives composable commerce foothold"],"weaknesses":["Requires significant developer investment to set up vs no-code alternatives","Enterprise governance, access control, and audit trails weaker than legacy platforms","GROQ is a proprietary language — learning curve and lock-in risk","Smaller Marketplace ecosystem than Contentful or Contentstack","Less established enterprise sales motion"],"where_we_win":["Contentstack's enterprise governance model (workflows, roles, branching, audit logs) is mature. Sanity's is newer.","Contentstack's 99.99% SLA and dedicated enterprise support vs Sanity's startup-to-enterprise transition.","Contentstack's native AI personalization (Personalize) has no Sanity equivalent.","Contentstack's visual page builder and Launch deployment platform cover the full DXP stack.","Contentstack Marketplace (300+) has broader enterprise integrations than Sanity's ecosystem.","Enterprise customer proof points: IKEA, Walmart vs Sanity's more developer/startup-oriented case studies."],"where_we_lose":["Sanity's developer experience and Studio customizability are best-in-class — developers love it more than Contentstack","GROQ query flexibility exceeds what Contentstack's APIs offer for complex content retrieval","Sanity's real-time collaboration is a unique feature Contentstack doesn't match","Sanity's pricing is more accessible for developer teams and growing companies","Sanity's Shopify Connect has stronger composable commerce integration"],"objections":[{"q":"Sanity's Studio is fully customizable — we can build exactly what we need","a":"Sanity's developer flexibility is real and valuable. But enterprise teams also need out-of-the-box governance, workflow automation, personalization, and a deployment platform. With Contentstack, your editors can be live in days — not after months of Studio customization. Flexibility is a feature and a cost."},{"q":"Sanity's GROQ queries are more powerful than GraphQL","a":"GROQ is powerful for complex content queries — a valid technical advantage. Contentstack supports GraphQL and REST with strong query capabilities. The question is whether GROQ flexibility is worth the proprietary lock-in and learning investment for your team."}],"positioning_angles":["Enterprise readiness vs developer tool: Sanity is loved by developers; Contentstack is trusted by enterprise procurement teams","Native DXP features: Contentstack includes personalization, automation, and deployment that Sanity doesn't","Time to value: Contentstack's out-of-the-box editor experience vs Sanity's setup investment","WATCH: Sanity's enterprise plan launches, Studio GA capabilities, and any governance/workflow feature announcements"],"risk_notes":"Sanity is a growing threat, especially in developer-first enterprise teams. Their Studio flexibility and GROQ query model differentiate them technically. Monitor their enterprise feature roadmap and Shopify composable commerce traction.","sources":[{"title":"Sanity Homepage","url":"https://www.sanity.io","type":"official_website","confidence":"high"},{"title":"Sanity Pricing","url":"https://www.sanity.io/pricing","type":"pricing_page","confidence":"high"}]};
+
+// Storyblok
+competitors.storyblok = {"name":"Storyblok","slug":"storyblok","website":"https://www.storyblok.com","risk":"medium","category":"Headless CMS / Visual CMS","secondary_category":"Composable DXP","hq":"Linz, Austria","founded":"2017","employees":{"value":"~250-350","estimated":true,"confidence":"medium"},"revenue":{"value":"Not disclosed","estimated":false,"confidence":"low"},"status":"Private","ticker":null,"funding":"Series B (~$80M raised)","key_customers":["Adidas","Deliveroo","Renault","Oatly","Obi"],"description":"Storyblok is a headless CMS with a unique real-time visual editor that lets marketers edit content in a visual preview context. Strong in e-commerce and mid-market. Growing enterprise motion. Known for non-technical editor friendliness.","positioning":"The headless CMS that empowers both developers and content teams to work side-by-side.","value_prop":"A developer-ready headless CMS with a real-time visual editor that content teams can actually use without developer help.","segment_focus":"Mid-market to lower enterprise. Strong in e-commerce, agency, and digital experience teams.","pricing":"Free community tier, paid plans from ~$99/mo (Team), enterprise custom pricing.","key_products":["Visual Editor: Real-time visual content editing with component-based layout","Headless CMS: API-first content management with REST and GraphQL","Storyblok AI: AI content generation and translation built-in","Storyblok Bridge: Preview integration for any frontend framework"],"target_customers":"Digital agencies, e-commerce companies, and mid-market teams who need a developer-friendly CMS that non-technical editors can use independently.","geography":"European-origin with strong North American growth. Offices in Linz, Austin, and London.","messaging_themes":["Visual editing for the headless era","Developers and marketers in perfect sync","AI-powered content at scale","Headless but not editor-less"],"differentiators":["Real-time visual editor is the most intuitive in the headless CMS category","Component-based content modeling mirrors modern frontend architecture","Built-in AI for content translation and generation","Strong e-commerce ecosystem (Shopify, Commercetools integrations)"],"feature_launches":[{"name":"Storyblok AI","date":"2024-04-01","summary":"Native AI content generation, summarization, and translation embedded in the CMS editor.","category":"AI / Content Creation","importance":"high","confidence":"high","source":"https://www.storyblok.com/blog","persona":"Content editors, localization teams"}],"why_buy":["Real-time visual editor is the most accessible for non-technical content teams","Component-based architecture aligns perfectly with modern React/Next.js frontends","Competitive pricing makes it accessible for mid-market and growing teams","Strong localization and translation capabilities with AI","European data residency appeals to GDPR-sensitive customers"],"strengths":["Visual editor is the market differentiator — reduces developer dependency for content teams","Component-based content modeling aligns with modern frontend development","European origin and GDPR compliance story resonates in EU markets","Competitive pricing vs Contentful and Contentstack at mid-market","Strong agency partner network in Europe"],"weaknesses":["Enterprise governance and access control less mature than Contentstack","Smaller Marketplace ecosystem than Contentful or Contentstack","Less proven at the largest enterprise scale (vs Contentstack's IKEA/Walmart deployments)","Brand recognition outside Europe is still growing","No native personalization or deployment platform"],"where_we_win":["Contentstack's enterprise scale and governance capabilities exceed Storyblok's for global enterprise teams","Contentstack's Marketplace (300+) has more enterprise integrations than Storyblok","Contentstack Personalize provides native AI personalization; Storyblok has no equivalent","Contentstack's customer proof points (IKEA, Walmart, Shell) resonate better with large enterprise procurement","Contentstack's 99.99% SLA and enterprise support structure is more robust"],"where_we_lose":["Storyblok's visual editor is genuinely better for non-technical content editors","Storyblok's pricing is more accessible for mid-market and growing teams","Storyblok's European roots and GDPR story resonates in EU-first companies","Storyblok has a stronger e-commerce component integration story"],"objections":[{"q":"Storyblok's visual editor is what our marketing team loves","a":"Storyblok's visual editor is genuinely good — it's their standout feature. Contentstack's Live Preview and visual building capabilities have improved significantly. The question for enterprise teams is whether a visual editor alone is worth trading for enterprise-grade governance, AI personalization, a 300+ integration Marketplace, and a dedicated support model."}],"positioning_angles":["Enterprise scale: Position Contentstack for companies that have grown beyond Storyblok's sweet spot","Full DXP: Contentstack's native personalization, automation, and deployment exceed Storyblok's CMS-only approach","Proof points: IKEA-scale deployments vs Storyblok's mid-market reference customers"],"risk_notes":"Storyblok is a growing mid-market competitor with a strong visual editor story. They compete most in the agency/SMB-to-mid-market segment rather than Contentstack's enterprise core. Monitor enterprise plan traction and any AI feature expansion.","sources":[{"title":"Storyblok Homepage","url":"https://www.storyblok.com","type":"official_website","confidence":"high"},{"title":"Storyblok Pricing","url":"https://www.storyblok.com/pricing","type":"pricing_page","confidence":"high"}]};
+
+// Hygraph
+competitors.hygraph = {"name":"Hygraph","slug":"hygraph","website":"https://hygraph.com","risk":"medium","category":"Headless CMS / Federated Content Platform","secondary_category":"GraphQL-native CMS","hq":"Berlin, Germany","founded":"2017 (GraphCMS, rebranded 2022)","employees":{"value":"~100-150","estimated":true,"confidence":"medium"},"revenue":{"value":"Not disclosed","estimated":false,"confidence":"low"},"status":"Private","ticker":null,"funding":"Series A (~$35M raised)","key_customers":["Shure","Castore","Telenor","Dr. Oetker"],"description":"Hygraph (formerly GraphCMS) is a GraphQL-native headless CMS that introduced content federation — the ability to query content from multiple sources via a single unified GraphQL API. Differentiates on technical architecture for complex, multi-source content environments.","positioning":"The federated content platform. Query content from anywhere via one unified API.","value_prop":"Unify content from any source — your CMS, third-party APIs, and databases — into a single GraphQL layer.","segment_focus":"Developer and tech-forward teams with complex content architecture requirements. Smaller than Contentstack's enterprise sweet spot.","pricing":"Free tier, paid plans from ~$300/mo, enterprise custom pricing.","key_products":["Headless CMS: GraphQL-native content management","Content Federation: Unite third-party APIs under one GraphQL layer","Schema Extensions: Extend any content model with external data","Remote Sources: Connect any REST/GraphQL API as a content source"],"target_customers":"Development teams building complex content architectures that require multiple content sources unified into a single API layer.","geography":"European-origin. Global customers via cloud hosting.","messaging_themes":["Federated content — one API to rule them all","GraphQL-native for the modern web","Content mesh for distributed architectures","Query any content, anywhere"],"differentiators":["Content federation is a unique architectural capability — no direct equivalent","GraphQL-native from day one (not a REST API with GraphQL adapter)","Schema extensions enable querying third-party APIs alongside CMS content","Cleaner developer experience for GraphQL-first teams"],"feature_launches":[{"name":"Content Federation v2","date":"2024-08-01","summary":"Enhanced federation layer enabling more complex multi-source queries, custom resolvers, and improved caching for federated content.","category":"Architecture / Federation","importance":"high","confidence":"high","source":"https://hygraph.com/blog","persona":"Senior engineers, architects"}],"why_buy":["Content federation is genuinely unique — no other headless CMS does this natively","GraphQL-native architecture appeals to engineering-led organizations","Schema extensions reduce custom API development for complex architectures","Clean, predictable GraphQL experience without REST/GraphQL adapter complexity"],"strengths":["Content federation is a unique technical moat","GraphQL-native from the ground up","Strong developer experience for GraphQL-first teams","Smaller company = more responsive to technical customer needs"],"weaknesses":["Much smaller market presence and customer base than Contentstack/Contentful","No AI personalization, deployment platform, or workflow automation","Visual editing and non-technical editor experience weaker than competitors","Enterprise governance features limited compared to Contentstack","Smaller Marketplace ecosystem"],"where_we_win":["Contentstack's enterprise-grade governance, RBAC, audit logs, and branching exceed Hygraph's","Contentstack's AI content operations (Automate, Personalize, Pulse) have no Hygraph equivalent","Contentstack's Marketplace (300+) provides far more enterprise integrations","Contentstack Launch provides deployment; Hygraph has no hosting layer","Enterprise proof points: IKEA, Walmart vs Hygraph's smaller customer base","Contentstack's 99.99% SLA and enterprise support vs Hygraph's smaller support org"],"where_we_lose":["Hygraph's content federation capability is genuinely unique — if the customer needs multi-source content unification, Hygraph wins architecturally","Hygraph's GraphQL-native architecture is cleaner for pure GraphQL teams","Hygraph's pricing is more accessible for developer teams"],"objections":[{"q":"Hygraph's content federation is architecturally unique","a":"Hygraph's federation model is technically interesting for teams with many content sources. Contentstack's Marketplace (300+ integrations) and Remote Sources capability cover most real-world multi-source needs without a proprietary federation layer. For enterprise teams, the governance, personalization, and SLA gaps in Hygraph are usually the deciding factor."}],"positioning_angles":["Enterprise scale gap: Hygraph is a technical niche product; Contentstack is an enterprise platform","Full DXP: personalization, deployment, and AI operations that Hygraph doesn't offer","Niche vs platform: federation is a feature; Contentstack is the whole stack"],"risk_notes":"Hygraph is a niche competitor with a unique technical moat (content federation). Low direct threat to Contentstack's enterprise core. Monitor if they add AI, personalization, or enterprise governance features.","sources":[{"title":"Hygraph Homepage","url":"https://hygraph.com","type":"official_website","confidence":"high"},{"title":"Hygraph Pricing","url":"https://hygraph.com/pricing","type":"pricing_page","confidence":"high"}]};
+
+// Kontent.ai
+competitors["kontent-ai"] = {"name":"Kontent.ai","slug":"kontent-ai","website":"https://kontent.ai","risk":"low","category":"Headless CMS / Enterprise Content Platform","secondary_category":"Headless CMS","hq":"Brno, Czech Republic","founded":"2019 (spun out of Kentico)","employees":{"value":"~200-300","estimated":true,"confidence":"medium"},"revenue":{"value":"Not disclosed","estimated":false,"confidence":"low"},"status":"Private","ticker":null,"funding":"Backed by Kentico (bootstrapped)","key_customers":["Mazda","T-Mobile","Zoro","Unifirst"],"description":"Kontent.ai is a cloud-native headless CMS spun out of Kentico in 2019. Positioned as a content-as-a-service platform for enterprise digital teams. Competes primarily in the same space as Contentful and Contentstack for enterprise headless CMS buyers.","positioning":"The headless CMS that makes your content work for you — AI-powered, structured, and future-ready.","value_prop":"A structured, modular headless CMS that gives enterprise teams control over content without developer dependency.","segment_focus":"Mid-market to enterprise. Strong in Central Europe and US. Competing directly with Contentful and Contentstack.","pricing":"Enterprise contract pricing. Plans from ~$1,990/mo for business tier.","key_products":["Headless CMS: Content management with structured content model","AI content tagging and categorization","Workflow automation and approval flows","Content operations analytics"],"target_customers":"Enterprise digital teams in manufacturing, retail, and B2B services.","geography":"Global with strong Central/Eastern European base. Growing US presence.","messaging_themes":["AI-powered content operations","Structured content for enterprise scale","Content-as-a-service for the modern stack"],"differentiators":["Strong structured content model","AI-powered tagging and categorization","Workflow and approval flows","Central European enterprise relationships"],"feature_launches":[{"name":"AI Content Tagging","date":"2024-10-01","summary":"Automated AI-driven content tagging and taxonomy classification to improve content discoverability and operations.","category":"AI / Content Operations","importance":"medium","confidence":"medium","source":"https://kontent.ai/blog","persona":"Content operations teams"}],"why_buy":["Structured content model is well-designed for enterprise use cases","AI content tagging reduces manual content operations overhead","Strong customer success model for enterprise onboarding","Competitive pricing vs Contentstack and Contentful","Central European enterprise relationships"],"strengths":["Structured content model is a genuine strength","AI content operations capabilities growing","Workflow and approval features serve enterprise governance needs","Bootstrapped — no investor pressure"],"weaknesses":["Much smaller market presence and developer community than Contentful or Contentstack","No personalization, deployment platform, or full DXP stack","Less brand recognition outside Central Europe","Limited Marketplace integrations vs Contentstack (300+) or Contentful"],"where_we_win":["Contentstack's composable DXP stack (Personalize, Automate, Launch, Marketplace) has no Kontent.ai equivalent","Contentstack's 300+ Marketplace integrations vs Kontent.ai's limited ecosystem","Enterprise proof points: IKEA, Walmart vs Kontent.ai's smaller reference base","Contentstack's branch-based workflows are unique in the market","99.99% SLA and enterprise support vs Kontent.ai's smaller support org"],"where_we_lose":["Kontent.ai's pricing is more transparent and accessible","Central European enterprise relationships may prefer a European vendor","Bootstrapped nature appeals to risk-averse procurement teams"],"objections":[{"q":"Kontent.ai is from Kentico — they have a long track record","a":"Kentico has a long track record in traditional CMS. Kontent.ai is their headless reboot, founded in 2019 — same vintage as Contentstack. The question is which headless-first, cloud-native platform has the deeper enterprise features, larger Marketplace, and more proven AI operations roadmap."}],"positioning_angles":["Full DXP vs headless CMS: Contentstack is the composable DXP; Kontent.ai is a headless CMS","Proof points: IKEA/Walmart scale vs Kontent.ai's smaller reference base","AI completeness: Contentstack's AI stack is broader and more production-ready"],"risk_notes":"Kontent.ai is a lower-priority competitor — smaller market presence, less developer community, and no DXP ambitions. Monitor primarily in Central European enterprise deals.","sources":[{"title":"Kontent.ai Homepage","url":"https://kontent.ai","type":"official_website","confidence":"high"}]};
+
+// Adobe Experience Manager
+competitors["adobe-aem"] = {"name":"Adobe Experience Manager","slug":"adobe-aem","website":"https://business.adobe.com/products/experience-manager/adobe-experience-manager.html","risk":"low","category":"Enterprise DXP / Traditional CMS","secondary_category":"Marketing Cloud","hq":"San Jose, CA","founded":"2012 (via Day Software acquisition)","employees":{"value":"~25,000+ (Adobe total)","estimated":false,"confidence":"high"},"revenue":{"value":"~$5.3B (Adobe Experience Cloud segment)","estimated":false,"confidence":"high"},"status":"Public","ticker":"ADBE","funding":null,"key_customers":["Cisco","Delta Airlines","T-Mobile","Ford","Sony","Verizon"],"description":"Adobe Experience Manager (AEM) is Adobe's enterprise web content management and digital asset management platform. Part of the Adobe Experience Cloud suite. Historically a monolithic CMS, Adobe has invested in headless capabilities (AEM as a Cloud Service, Content Fragments, GraphQL delivery). Deeply integrated with Adobe Analytics, Target, and Marketo.","positioning":"The complete digital experience platform for enterprise — create, manage, and deliver content across every channel.","value_prop":"Manage content and digital assets in one platform, deeply integrated with Adobe Analytics, Target, and Marketo for end-to-end personalization.","segment_focus":"Large enterprise — Fortune 500 companies with existing Adobe investments and complex digital experience requirements.","pricing":"Enterprise contract only. AEM is one of the most expensive CMS platforms on the market — typically $200K-$1M+ annually.","key_products":["AEM Sites: Web content management (traditional + headless)","AEM Assets: Digital asset management","AEM Forms: Digital form creation and management","Content Fragments: Headless content delivery","Adobe Experience Platform: Data + personalization layer","Adobe Target: AI-driven personalization","Adobe Analytics: Experience analytics"],"target_customers":"Large enterprises with existing Adobe suite investments who need integrated content management, DAM, personalization, and analytics in one vendor relationship.","geography":"Global. Dominant in North America and Europe among Fortune 500.","messaging_themes":["One platform for every digital experience","AI-powered personalization with Adobe Sensei","Integrated with Adobe Marketing Cloud","Enterprise-grade content and asset management"],"differentiators":["Deepest integration with Adobe Marketing Cloud (Analytics, Target, Marketo, CDP)","Best-in-class digital asset management (DAM)","Decades of enterprise trust and support infrastructure","Adobe Sensei AI across the platform"],"feature_launches":[{"name":"AEM Headless as Cloud Service","date":"2024-06-01","summary":"Headless content delivery capability for AEM, competing directly with pure-play headless CMS in hybrid and headless deployments.","category":"Headless / Architecture","importance":"high","confidence":"high","source":"https://business.adobe.com","persona":"Enterprise architects, IT teams"}],"why_buy":["Single vendor for the entire Adobe marketing stack — analytics, content, personalization, DAM","Enterprise trust: Fortune 500 companies have used AEM for decades","Best-in-class digital asset management included","Adobe Sensei AI across content, personalization, and analytics","Deep integration with Salesforce, SAP via Adobe Experience Platform"],"strengths":["Adobe brand and enterprise trust are unmatched","Deepest marketing technology integration in the market","Best-in-class DAM (AEM Assets)","AI capabilities via Adobe Sensei across the platform","Salesforce-level enterprise support and professional services"],"weaknesses":["Very expensive — 5-10x the cost of Contentstack","Slow to innovate — legacy architecture takes years to update","Headless capabilities are bolted on — not native headless","Developer experience is poor by modern standards","Implementation requires expensive consulting/partner engagements","Overkill for teams that don't need the full Adobe stack"],"where_we_win":["Contentstack is significantly cheaper and faster to implement","Contentstack is native headless — AEM's headless is an afterthought","Contentstack is developer-friendly; AEM requires expensive consultants","Contentstack's time-to-value: months vs AEM's typical 12-24 month implementations","Contentstack's composable architecture avoids vendor lock-in; AEM locks you into Adobe","For companies without existing Adobe investments, Contentstack's total cost of ownership wins clearly"],"where_we_lose":["AEM wins when the customer has deep Adobe Marketing Cloud investment — analytics, Target, Marketo, CDP all in one contract","AEM's digital asset management (DAM) is genuinely better than Contentstack's","For regulated industries with existing Adobe relationships, AEM's enterprise trust wins","AEM's Adobe Sensei personalization + Target integration is mature; Contentstack Personalize is newer"],"objections":[{"q":"We're an Adobe shop — we need AEM to stay in the stack","a":"If you're deeply invested in Adobe Analytics, Target, and Marketo, AEM is a logical CMS choice. But if headless delivery speed, developer experience, and total cost are priorities, Contentstack integrates with Adobe Experience Platform via our Marketplace — you get the best of Contentstack's composable CMS and your Adobe analytics and personalization tools."},{"q":"AEM is enterprise-proven — we know it works","a":"AEM has decades of enterprise deployments — and equally long implementation timelines and cost overruns. Contentstack has IKEA, Walmart, and Shell as proof points. We deliver enterprise-grade reliability at a fraction of the cost and implementation time."}],"positioning_angles":["Cost and speed: Contentstack at a fraction of AEM's cost and implementation time","Native headless vs bolt-on: Contentstack was headless from day one","Developer experience: modern developer tooling vs AEM's Java-based complexity","Composable vs locked in: Contentstack's 300+ Marketplace vs Adobe's walled garden","AEM replacement: position Contentstack as the modern alternative when AEM contracts come up for renewal"],"risk_notes":"Adobe AEM competes at the very top of the enterprise market. Low direct competition in headless-first deals, but high risk in large enterprise deals where customers have existing Adobe relationships. Key moment: AEM contract renewals are an opportunity for Contentstack displacement.","sources":[{"title":"Adobe Experience Manager","url":"https://business.adobe.com/products/experience-manager/adobe-experience-manager.html","type":"official_website","confidence":"high"}]};
+
+// Sitecore
+competitors.sitecore = {"name":"Sitecore","slug":"sitecore","website":"https://www.sitecore.com","risk":"low","category":"Enterprise DXP / Traditional CMS","secondary_category":"Composable DXP","hq":"San Francisco, CA (Copenhagen origin)","founded":"2001","employees":{"value":"~2,000-3,000","estimated":true,"confidence":"medium"},"revenue":{"value":"~$300-400M estimated","estimated":true,"confidence":"low"},"status":"Private","ticker":null,"funding":"PE-backed (EQT, Thomas H. Lee Partners)","key_customers":["American Express","L'Oreal","Microsoft","Pfizer","Volvo"],"description":"Sitecore is a long-standing enterprise DXP that has undergone a major composable transformation — moving from a monolithic .NET CMS to a suite of composable products (XM Cloud, Content Hub, CDP, Personalize, Send). Positioned as a composable DXP competitor to Contentstack and Adobe.","positioning":"The composable DXP for enterprises ready to break free from monolithic platforms.","value_prop":"A composable DXP that lets enterprises mix best-of-breed Sitecore products with third-party tools — all on modern cloud infrastructure.","segment_focus":"Large enterprise, particularly Microsoft ecosystem (.NET) customers and legacy Sitecore CMS users migrating to composable.","pricing":"Enterprise contract only. Modular pricing per product (XM Cloud, CDP, Personalize, Content Hub).","key_products":["XM Cloud: Cloud-native headless CMS (replacement for Sitecore Experience Manager)","Content Hub: DAM, product content management, brand portal","CDP: Customer data platform","Personalize: Experimentation and personalization","Send: Email marketing automation"],"target_customers":"Large enterprises migrating from legacy Sitecore Experience Manager or Episerver to modern composable architecture.","geography":"Global. Strong in North America and Europe. Large Microsoft ecosystem footprint.","messaging_themes":["Composable DXP — freedom to choose","Break free from monolithic CMS","Cloud-native and API-first","AI-powered personalization and content operations"],"differentiators":["Largest installed base of enterprise CMS customers (existing Sitecore migration path)","Integrated suite: CMS + DAM + CDP + Personalize + email in one composable family","Strong Microsoft ecosystem integration (.NET, Azure)","Longest enterprise DXP track record"],"feature_launches":[{"name":"Sitecore XM Cloud","date":"2023-09-01","summary":"Cloud-native headless CMS replacing the traditional Sitecore Experience Manager, enabling composable architecture without on-premise infrastructure.","category":"Platform Modernization","importance":"critical","confidence":"high","source":"https://www.sitecore.com/blog","persona":"Enterprise architects, IT directors"}],"why_buy":["Migration path from legacy Sitecore Experience Manager — reduces replacement risk","Integrated suite covers CMS, DAM, CDP, personalization, and email in one family","Strong Microsoft/Azure ecosystem alignment","Longest enterprise DXP track record in the market","Global partner and implementation network"],"strengths":["Largest installed base — existing Sitecore customers are sticky","Integrated composable suite covers more use cases than standalone headless CMS","Microsoft ecosystem alignment is a real differentiator for .NET shops","Strong global implementation partner network"],"weaknesses":["Composable transformation is still in progress — products feel like separate acquisitions","Developer experience lags behind modern headless CMS","XM Cloud is newer and less proven than Contentstack at headless-first deployments","Expensive and complex for teams that don't need the full suite","PE-backed — acquisition pressure may disrupt roadmap"],"where_we_win":["Contentstack's native headless architecture is more mature than Sitecore XM Cloud (newer)","Contentstack's developer experience is significantly better","Contentstack's AI content operations (Pulse, Automate, Personalize) are more advanced","Contentstack's Marketplace (300+) is larger and more diverse than Sitecore's ecosystem","For greenfield headless deployments, Contentstack's time-to-value is better"],"where_we_lose":["For existing Sitecore customers, the migration path within the Sitecore family is lower risk","Sitecore's integrated suite (CMS + DAM + CDP + email) is compelling for teams wanting one composable vendor","Microsoft ecosystem alignment gives Sitecore a structural advantage in .NET shops"],"objections":[{"q":"We're migrating from Sitecore XM — XM Cloud is the logical next step","a":"XM Cloud is the natural upgrade path within Sitecore's family — but it's also a chance to evaluate whether a newer headless-first platform like Contentstack delivers better developer experience, faster time-to-market, and more advanced AI content operations. Many Sitecore migrations have chosen Contentstack as the fresh start."}],"positioning_angles":["Modernization opportunity: Sitecore XM Cloud migrations are a chance to evaluate Contentstack","Developer experience gap: Contentstack's modern headless tooling vs Sitecore's .NET legacy","AI completeness: Contentstack's AI stack is more coherent and production-ready","Speed: Contentstack deployments are typically faster than Sitecore implementations"],"risk_notes":"Sitecore is a declining force in greenfield headless CMS but still a major player in enterprise DXP through its installed base. Primary risk is in deals where the customer already has Sitecore XM licenses and is considering XM Cloud as an upgrade. Monitor Sitecore's composable suite integration pace.","sources":[{"title":"Sitecore Homepage","url":"https://www.sitecore.com","type":"official_website","confidence":"high"}]};
+
+// Bloomreach
+competitors.bloomreach = {"name":"Bloomreach","slug":"bloomreach","website":"https://www.bloomreach.com","risk":"low","category":"Digital Experience Platform / Commerce DXP","secondary_category":"Headless CMS / Search & Discovery","hq":"Mountain View, CA","founded":"2009","employees":{"value":"~800-1000","estimated":true,"confidence":"medium"},"revenue":{"value":"~$100-150M ARR estimated","estimated":true,"confidence":"low"},"status":"Private","ticker":null,"funding":"Series E (~$200M+ raised)","key_customers":["Puma","Bosch","Albertsons","Marks & Spencer","OttoGroup"],"description":"Bloomreach is a digital commerce DXP combining headless CMS (Bloomreach Content), AI-powered search and merchandising (Bloomreach Discovery), and customer data and engagement (Bloomreach Engagement). Primarily a commerce-focused DXP — strongest in retail and e-commerce.","positioning":"The commerce experience platform — AI-powered search, content, and customer data in one.","value_prop":"Combine headless content management with AI-powered product discovery and personalization to drive commerce revenue.","segment_focus":"Retail, e-commerce, and commerce-adjacent enterprises. Not competing directly with Contentstack in general enterprise CMS.","pricing":"Enterprise contract. Modular pricing per product. Typically $150K-$500K+ annually for full platform.","key_products":["Bloomreach Content: Headless CMS for commerce-focused digital experiences","Bloomreach Discovery: AI-powered site search and product merchandising","Bloomreach Engagement: Customer data platform and marketing automation","Bloomreach Clarity: AI personalization for commerce"],"target_customers":"Retail and e-commerce enterprises that need a tightly integrated content + search + personalization experience for driving commerce revenue.","geography":"Global. Strong in North America and Europe. Particularly strong in UK retail.","messaging_themes":["The commerce experience platform","AI-powered discovery and personalization","Content + search + data in one platform","Revenue-driving digital experience"],"differentiators":["Only DXP combining headless CMS + AI search + CDP in one platform","AI-powered product search and merchandising is genuinely best-in-class for retail","Strong UK and European retail customer base","Commerce revenue-focused — not just content management"],"feature_launches":[{"name":"Bloomreach Clarity","date":"2024-09-01","summary":"AI-native personalization engine for commerce, combining product discovery signals with content personalization.","category":"AI / Commerce","importance":"high","confidence":"high","source":"https://www.bloomreach.com/blog","persona":"E-commerce merchandisers, digital teams"}],"why_buy":["Only platform combining CMS + AI search + CDP natively for commerce","AI-powered product search drives measurable revenue uplift","Strong retail proof points: Puma, Albertsons, Marks & Spencer","Single platform for content + discovery + customer data reduces integration complexity"],"strengths":["AI product search and merchandising is genuinely best-in-class for retail","Unique commerce DXP positioning — not a direct headless CMS competitor","Strong UK/European retail relationships","Bloomreach Engagement CDP is competitive in commerce personalization"],"weaknesses":["Narrow commerce focus limits applicability outside retail","Headless CMS (Bloomreach Content) is weaker than Contentstack for general enterprise use cases","Not competing directly with Contentstack in most non-retail enterprise deals","Complex platform — each module (Content, Discovery, Engagement) has steep onboarding"],"where_we_win":["Contentstack is a better fit for non-commerce enterprise use cases (media, financial services, healthcare)","Contentstack's 300+ Marketplace vs Bloomreach's more commerce-centric ecosystem","Contentstack's branch-based workflows and enterprise governance exceed Bloomreach Content","For general enterprise headless CMS, Contentstack's developer experience is stronger"],"where_we_lose":["In retail and e-commerce, Bloomreach's integrated AI search + content + CDP is difficult to match","Bloomreach's UK retail relationships are deeply entrenched in their sweet spot"],"objections":[{"q":"Bloomreach handles content AND search AND personalization in one platform","a":"Bloomreach's commerce DXP is genuinely strong for retail — search + content + personalization in one is compelling. For enterprises outside retail (media, financial services, healthcare, B2B), Contentstack's composable DXP with 300+ Marketplace integrations and enterprise-grade governance is the better fit. Contentstack also integrates with best-in-class search tools (Algolia, Elasticsearch) via Marketplace."}],"positioning_angles":["Vertical focus: Bloomreach is a retail DXP; Contentstack is a cross-industry enterprise platform","Composable vs integrated: Contentstack's 300+ Marketplace vs Bloomreach's closed ecosystem","Governance and workflow: Contentstack's enterprise features exceed Bloomreach Content's"],"risk_notes":"Bloomreach is a low-priority competitor outside retail and e-commerce. Their primary market is commerce-focused digital teams. Risk is highest in retail enterprise deals where Bloomreach's integrated search + content + CDP is a compelling alternative to Contentstack + third-party search + CDP.","sources":[{"title":"Bloomreach Homepage","url":"https://www.bloomreach.com","type":"official_website","confidence":"high"}]};
+
+// -- RENDERING --
+function confTag(c) {
+  if (!c) return '';
+  return `<span class="confidence-tag conf-${c}">${c}</span>`;
+}
+function impClass(i) { return 'imp-' + (i || 'medium'); }
+function riskClass(r) { return 'risk-' + (r || 'medium'); }
+
+function renderOverview() {
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  // Render Contentstack first as the hero "us" card
+  const cs = competitors.contentstack;
+  if (cs) {
+    grid.innerHTML += `
+      <div class="comp-card is-us" onclick="showDetail('contentstack')">
+        <div class="comp-card-header">
+          <div>
+            <div class="comp-name">${cs.name}</div>
+            <div class="comp-category">${cs.category}</div>
+          </div>
+          <span class="us-badge">Our Company</span>
+        </div>
+        <div class="comp-card-body">
+          <div class="comp-meta">
+            <div class="meta-item"><div class="meta-label">HQ</div><div class="meta-value">${cs.hq}</div></div>
+            <div class="meta-item"><div class="meta-label">Founded</div><div class="meta-value">${cs.founded}</div></div>
+            <div class="meta-item"><div class="meta-label">Employees</div><div class="meta-value">${cs.employees.value}</div></div>
+            <div class="meta-item"><div class="meta-label">Funding</div><div class="meta-value">${cs.funding}</div></div>
+            <div class="meta-item"><div class="meta-label">Pricing Model</div><div class="meta-value" style="font-size:12px">${cs.pricing.split('.')[0]}</div></div>
+            <div class="meta-item"><div class="meta-label">Key Customers</div><div class="meta-value" style="font-size:12px">${cs.key_customers.slice(0,5).join(', ')}</div></div>
+          </div>
+          <div class="comp-desc">${cs.description}</div>
+          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            ${cs.differentiators.slice(0,4).map(d => `<span class="pill active" style="font-size:11px">${d}</span>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // Render competitors
+  Object.values(competitors).forEach(c => {
+    if (c.is_us) return; // skip Contentstack, already rendered
+    grid.innerHTML += `
+      <div class="comp-card" onclick="showDetail('${c.slug}')">
+        <div class="comp-card-header">
+          <div>
+            <div class="comp-name">${c.name}</div>
+            <div class="comp-category">${c.category}</div>
+          </div>
+          <span class="risk-badge ${riskClass(c.risk)}">${c.risk} risk</span>
+        </div>
+        <div class="comp-card-body">
+          <div class="comp-meta">
+            <div class="meta-item"><div class="meta-label">HQ</div><div class="meta-value">${c.hq}</div></div>
+            <div class="meta-item"><div class="meta-label">Founded</div><div class="meta-value">${c.founded}</div></div>
+            <div class="meta-item"><div class="meta-label">Employees</div><div class="meta-value">${c.employees.value} ${c.employees.estimated ? '<span class="confidence-tag estimated-tag">est</span>' : ''}</div></div>
+            <div class="meta-item"><div class="meta-label">${c.status === 'Public' ? 'Revenue' : 'Funding'}</div><div class="meta-value">${c.status === 'Public' ? c.revenue.value : (c.funding || 'N/A')}</div></div>
+            <div class="meta-item" style="grid-column:1/-1"><div class="meta-label">Pricing Model</div><div class="meta-value" style="font-size:12px">${c.pricing.split('.')[0]}</div></div>
+          </div>
+          <div class="comp-desc">${c.description}</div>
+          ${c.key_customers ? `<div style="margin-top:14px"><div class="meta-label" style="margin-bottom:6px">Key Customers</div><div style="display:flex;gap:6px;flex-wrap:wrap">${c.key_customers.slice(0,6).map(k => `<span style="padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:var(--surface2);border:1px solid var(--border);color:var(--text)">${k}</span>`).join('')}${c.key_customers.length > 6 ? `<span style="padding:3px 10px;border-radius:6px;font-size:11px;color:var(--text-muted)">+${c.key_customers.length - 6} more</span>` : ''}</div></div>` : ''}
+        </div>
+      </div>`;
+  });
+}
+
+function showDetail(slug) {
+  const c = competitors[slug];
+  if (!c) return;
+  document.getElementById('tab-overview').classList.remove('active');
+  const dv = document.getElementById('detail-view');
+  dv.classList.add('active');
+
+  dv.innerHTML = `
+    <button class="back-btn" onclick="hideDetail()">&larr; Back to overview</button>
+    <div class="detail-header">
+      <div>
+        <h2>${c.name}</h2>
+        <div style="color:var(--text-muted);margin-top:4px">${c.category}</div>
+      </div>
+      <div class="detail-meta-row">
+        ${c.is_us ? '<span class="us-badge">Our Company</span>' : `<span class="risk-badge ${riskClass(c.risk)}">${c.risk} risk</span>`}
+        <span class="pill">${c.status}${c.ticker ? ' · ' + c.ticker : ''}${c.funding ? ' · '+c.funding : ''}</span>
+        <a href="${c.website}" target="_blank" class="pill" style="color:var(--blue);text-decoration:none">${c.website.replace('https://','')}</a>
+      </div>
+    </div>
+
+    <!-- Company Overview -->
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f3e2;</span> Company Overview</div>
+      <div class="section-body">
+        <table class="info-table">
+          <tr><td>HQ Location</td><td>${c.hq}</td></tr>
+          <tr><td>Founded</td><td>${c.founded}</td></tr>
+          <tr><td>Employees</td><td>${c.employees.value} ${c.employees.estimated ? '<span class="confidence-tag estimated-tag">estimated</span>' : ''} ${confTag(c.employees.confidence)}</td></tr>
+          <tr><td>${c.status === 'Public' ? 'Revenue' : 'Funding'}</td><td>${c.revenue ? `${c.revenue.value} ${c.revenue.estimated ? '<span class="confidence-tag estimated-tag">estimated</span>' : ''} ${confTag(c.revenue.confidence)}` : (c.funding || 'N/A')}</td></tr>
+          <tr><td>Status</td><td>${c.status}${c.ticker ? ' ('+c.ticker+')' : ''}</td></tr>
+          <tr><td>Target Customers</td><td>${c.target_customers}</td></tr>
+          <tr><td>Geography</td><td>${c.geography}</td></tr>
+        </table>
+        <p style="margin-top:16px;font-size:14px;color:var(--text-muted)">${c.description}</p>
+        <h4 style="margin-top:20px;margin-bottom:10px;font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Key Products</h4>
+        <ul class="item-list">${c.key_products.map(p => `<li><span class="item-bullet"></span><span>${p}</span></li>`).join('')}</ul>
+      </div>
+    </div>
+
+    <!-- Positioning -->
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f3af;</span> Category & Positioning</div>
+      <div class="section-body">
+        <table class="info-table">
+          <tr><td>Positioning</td><td><em>"${c.positioning}"</em></td></tr>
+          <tr><td>Value Prop</td><td>${c.value_prop}</td></tr>
+          <tr><td>Segment Focus</td><td>${c.segment_focus}</td></tr>
+          <tr><td>Pricing Model</td><td>${c.pricing}</td></tr>
+        </table>
+        <h4 style="margin-top:20px;margin-bottom:10px;font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Messaging Themes</h4>
+        <ul class="item-list">${c.messaging_themes.map(t => `<li><span class="item-bullet"></span><span>${t}</span></li>`).join('')}</ul>
+        <h4 style="margin-top:16px;margin-bottom:10px;font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Claimed Differentiators</h4>
+        <ul class="item-list">${c.differentiators.map(d => `<li><span class="item-bullet"></span><span>${d}</span></li>`).join('')}</ul>
+      </div>
+    </div>
+
+    <!-- Feature Launches -->
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f680;</span> Product & Launch Intelligence</div>
+      <div class="section-body">
+        ${c.feature_launches.map(fl => `
+          <div class="launch-card">
+            <div class="launch-header">
+              <span class="launch-name">${fl.name}</span>
+              <span class="importance-badge ${impClass(fl.importance)}">${fl.importance}</span>
+            </div>
+            <div class="launch-summary">${fl.summary}</div>
+            <div class="launch-meta">
+              <span>&#x1f4c5; ${fl.date}</span>
+              <span>&#x1f3f7; ${fl.category}</span>
+              <span>&#x1f464; ${fl.persona}</span>
+              ${fl.source ? `<span><a href="${fl.source}" target="_blank" style="color:var(--blue);text-decoration:none">Source</a></span>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Battle Card / Strategic Assessment -->
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x2694;</span> ${c.is_us ? 'Strategic Assessment' : 'Battle Card'}</div>
+      <div class="section-body">
+        ${!c.is_us && c.risk_notes ? `<div style="padding:12px 16px;background:var(--surface2);border-radius:8px;margin-bottom:24px;">
+          <span class="risk-badge ${riskClass(c.risk)}" style="margin-right:8px">${c.risk} territory risk</span>
+          <span style="font-size:13px;color:var(--text-muted)">${c.risk_notes}</span>
+        </div>` : ''}
+
+        <h4 style="margin-bottom:12px;font-size:14px;font-weight:700;">${c.is_us ? 'Why Customers Choose Us' : 'Why Customers Buy Them'}</h4>
+        <ul class="item-list">${c.why_buy.map(w => `<li><span class="item-bullet"></span><span>${w}</span></li>`).join('')}</ul>
+
+        <h4 style="margin:20px 0 12px;font-size:14px;font-weight:700;">${c.is_us ? 'Our Strengths' : 'Likely Strengths'}</h4>
+        <ul class="item-list">${c.strengths.map(s => `<li><span class="item-bullet strength-bullet"></span><span>${s}</span></li>`).join('')}</ul>
+
+        <h4 style="margin:20px 0 12px;font-size:14px;font-weight:700;">${c.is_us ? 'Areas to Improve' : 'Likely Weaknesses / Gaps'}</h4>
+        <ul class="item-list">${c.weaknesses.map(w => `<li><span class="item-bullet weakness-bullet"></span><span>${w}</span></li>`).join('')}</ul>
+
+        ${c.where_we_win && c.where_we_win.length ? `
+        <h4 style="margin:20px 0 12px;font-size:14px;font-weight:700;color:var(--green)">${c.is_us ? 'Key Competitive Advantages' : 'Where Contentstack Wins'}</h4>
+        <ul class="item-list">${c.where_we_win.map(w => `<li><span class="item-bullet win-bullet"></span><span>${w}</span></li>`).join('')}</ul>` : ''}
+
+        ${c.where_we_lose && c.where_we_lose.length ? `
+        <h4 style="margin:20px 0 12px;font-size:14px;font-weight:700;color:var(--red)">${c.is_us ? 'Competitive Gaps to Address' : 'Where Contentstack Loses'}</h4>
+        <ul class="item-list">${c.where_we_lose.map(w => `<li><span class="item-bullet lose-bullet"></span><span>${w}</span></li>`).join('')}</ul>` : ''}
+      </div>
+    </div>
+
+    <!-- Objection Handling / Positioning Angles -->
+    ${c.objections && c.objections.length ? `
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f4ac;</span> Objection Handling</div>
+      <div class="section-body">
+        ${c.objections.map(o => `
+          <div class="objection-card">
+            <div class="objection-q">"${o.q}"</div>
+            <div class="objection-a">${o.a}</div>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Positioning Angles -->
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f9ed;</span> ${c.is_us ? 'Our Positioning Angles' : 'Competitive Positioning Angles'}</div>
+      <div class="section-body">
+        <ul class="item-list">${c.positioning_angles.map(a => `<li><span class="item-bullet"></span><span>${a}</span></li>`).join('')}</ul>
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="section">
+      <div class="section-header"><span class="section-icon">&#x1f4d1;</span> Sources</div>
+      <div class="section-body">
+        <table class="sources-table">
+          <thead><tr><th>Source</th><th>Type</th><th>Confidence</th></tr></thead>
+          <tbody>${c.sources.map(s => `<tr><td><a href="${s.url}" target="_blank">${s.title}</a></td><td>${s.type}</td><td>${confTag(s.confidence)}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function hideDetail() {
+  document.getElementById('detail-view').classList.remove('active');
+  document.getElementById('detail-view').innerHTML = '';
+  document.getElementById('tab-overview').classList.add('active');
+}
+
+function resetAllTabs() {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('detail-view').classList.remove('active');
+  document.getElementById('detail-view').innerHTML = '';
+}
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    resetAllTabs();
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Update header pill with competitor count
+const competitorCount = Object.values(competitors).filter(c => !c.is_us).length;
+document.getElementById('pill-count').textContent = competitorCount + ' Competitors Monitored';
+
+// Init
+renderOverview();
+</script>
+</body>
+</html>

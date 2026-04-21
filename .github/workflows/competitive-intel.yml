@@ -1,0 +1,67 @@
+name: Competitive Intelligence Pipeline
+
+on:
+  schedule:
+    # Daily at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force re-process all competitors (ignore change detection)'
+        required: false
+        default: 'false'
+        type: boolean
+      competitor:
+        description: 'Single competitor slug to process (leave blank for all)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run competitive intelligence pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.competitor }}" != "" ]; then
+            python main.py run --competitor "${{ github.event.inputs.competitor }}"
+          elif [ "${{ github.event.inputs.force }}" = "true" ]; then
+            python main.py run --force
+          else
+            python main.py run
+          fi
+
+      - name: Inject battle cards into index.html
+        run: python scripts/inject_battlecards.py
+
+      - name: Commit and push updated battle cards
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/battlecards/json/ index.html
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update battle cards $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

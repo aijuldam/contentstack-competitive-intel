@@ -1,0 +1,164 @@
+# =============================================================================
+# Contentstack Competitive Intelligence — Configuration
+# =============================================================================
+# Edit this file to update the target company, competitor list, monitored URLs,
+# messaging inputs, and output settings. The pipeline reads this on every run.
+
+# -- Our Company Context -------------------------------------------------------
+our_company:
+  name: "Contentstack"
+  website: "https://www.contentstack.com"
+  description: "Enterprise headless CMS and composable DXP founded in 2018 (spun out of Raw Engineering). HQ San Francisco. API-first, omnichannel content management for large enterprises. Pioneer of the composable DXP category."
+  category: "Headless CMS / Composable DXP"
+  icp: "Large enterprises managing content across multiple channels, brands, and regions — media, retail, financial services, healthcare, technology."
+  strengths:
+    - "Enterprise-grade headless CMS — built for scale from day one, not retrofitted"
+    - "Composable DXP: 300+ Marketplace integrations, no lock-in"
+    - "AI content operations: Pulse, Automate, AI Assistant, Personalize"
+    - "Branch-based content workflows (dev parity with code)"
+    - "99.99% uptime SLA with dedicated enterprise support"
+    - "Named Leader in Forrester Wave for Agile CMS"
+    - "Reference customers: IKEA, Walmart, Mattel, Shell, Mitsubishi, Sega"
+  weaknesses:
+    - "Less developer brand recognition than Contentful"
+    - "Enterprise-only pricing limits SMB/startup accessibility"
+    - "UI can have learning curve for non-technical editors"
+
+# -- Monitoring Settings -------------------------------------------------------
+monitoring:
+  default_check_interval_hours: 24
+  priority_check_interval_hours: 12
+  staleness_threshold_days: 30
+  max_concurrent_requests: 5
+  request_delay_seconds: 2
+  request_timeout_seconds: 30
+  respect_robots_txt: true
+  user_agent: "CompetitiveIntelBot/0.1 (internal research)"
+
+# -- LLM Settings --------------------------------------------------------------
+llm:
+  provider: "anthropic"
+  model: "claude-sonnet-4-20250514"
+  max_tokens: 4096
+  temperature: 0.2
+
+# -- Storage -------------------------------------------------------------------
+storage:
+  database_path: "data/competitive_intel.db"
+  snapshots_dir: "data/snapshots"
+  battlecards_dir: "data/battlecards"
+
+# -- Output --------------------------------------------------------------------
+output:
+  json_dir: "data/battlecards/json"
+  markdown_dir: "data/battlecards/markdown"
+  digest_dir: "data/reports"
+
+# -- Schedule (used by `python main.py schedule` and GitHub Actions cron) ------
+schedule:
+  full_refresh_cron: "0 2 * * *"       # Daily at 2 AM UTC
+  priority_check_cron: "0 */12 * * *"  # Every 12 hours
+  weekly_digest_cron: "0 8 * * 1"      # Monday 8 AM UTC
+  staleness_check_cron: "0 7 * * *"    # Daily 7 AM UTC
+
+# -- Competitors ---------------------------------------------------------------
+# Add/remove competitors here. The pipeline will pick them up on the next run.
+# tracked_urls: organize by category — homepage, pricing, product, blog,
+#               changelog, careers, docs, investor_relations, social, custom
+# is_priority: true → checked every 12 hours; false → every 24 hours
+
+competitors:
+
+  # ---------------------------------------------------------------------------
+  # Direct headless CMS competitors (Priority)
+  # ---------------------------------------------------------------------------
+
+  - name: "Contentful"
+    slug: "contentful"
+    website: "https://www.contentful.com"
+    is_priority: true
+    tracked_urls:
+      homepage: "https://www.contentful.com"
+      pricing: "https://www.contentful.com/pricing/"
+      product: "https://www.contentful.com/products/"
+      blog: "https://www.contentful.com/blog/"
+      changelog: "https://www.contentful.com/changelog/"
+      careers: "https://www.contentful.com/careers/"
+
+  - name: "Sanity"
+    slug: "sanity"
+    website: "https://www.sanity.io"
+    is_priority: true
+    tracked_urls:
+      homepage: "https://www.sanity.io"
+      pricing: "https://www.sanity.io/pricing"
+      product: "https://www.sanity.io/product"
+      blog: "https://www.sanity.io/blog"
+      changelog: "https://www.sanity.io/changelog"
+      careers: "https://www.sanity.io/careers"
+
+  - name: "Storyblok"
+    slug: "storyblok"
+    website: "https://www.storyblok.com"
+    is_priority: true
+    tracked_urls:
+      homepage: "https://www.storyblok.com"
+      pricing: "https://www.storyblok.com/pricing"
+      product: "https://www.storyblok.com/product"
+      blog: "https://www.storyblok.com/blog"
+      changelog: "https://www.storyblok.com/changelog"
+      careers: "https://www.storyblok.com/careers"
+
+  - name: "Hygraph"
+    slug: "hygraph"
+    website: "https://hygraph.com"
+    is_priority: true
+    tracked_urls:
+      homepage: "https://hygraph.com"
+      pricing: "https://hygraph.com/pricing"
+      product: "https://hygraph.com/product"
+      blog: "https://hygraph.com/blog"
+      careers: "https://hygraph.com/company/careers"
+
+  - name: "Kontent.ai"
+    slug: "kontent-ai"
+    website: "https://kontent.ai"
+    is_priority: false
+    tracked_urls:
+      homepage: "https://kontent.ai"
+      pricing: "https://kontent.ai/pricing/"
+      product: "https://kontent.ai/product/"
+      blog: "https://kontent.ai/blog/"
+
+  # ---------------------------------------------------------------------------
+  # Adjacent enterprise DXP / CMS (Standard monitoring)
+  # ---------------------------------------------------------------------------
+
+  - name: "Adobe Experience Manager"
+    slug: "adobe-aem"
+    website: "https://business.adobe.com/products/experience-manager/adobe-experience-manager.html"
+    is_priority: false
+    tracked_urls:
+      homepage: "https://business.adobe.com/products/experience-manager/adobe-experience-manager.html"
+      product: "https://business.adobe.com/products/experience-manager/sites/aem-sites.html"
+      blog: "https://business.adobe.com/blog/the-latest/web-experience-management"
+
+  - name: "Sitecore"
+    slug: "sitecore"
+    website: "https://www.sitecore.com"
+    is_priority: false
+    tracked_urls:
+      homepage: "https://www.sitecore.com"
+      product: "https://www.sitecore.com/products/content-hub"
+      blog: "https://www.sitecore.com/blog"
+      careers: "https://www.sitecore.com/company/careers"
+
+  - name: "Bloomreach"
+    slug: "bloomreach"
+    website: "https://www.bloomreach.com"
+    is_priority: false
+    tracked_urls:
+      homepage: "https://www.bloomreach.com"
+      product: "https://www.bloomreach.com/en/products/content"
+      blog: "https://www.bloomreach.com/en/blog"
+      careers: "https://www.bloomreach.com/en/careers"

@@ -18,6 +18,7 @@ from .schema import (
     ReviewQueueItem,
     WeeklyDigest,
     DigestEntry,
+    TrackedUrls,
 )
 
 __all__ = [
@@ -40,4 +41,5 @@ __all__ = [
     "ReviewQueueItem",
     "WeeklyDigest",
     "DigestEntry",
+    "TrackedUrls",
 ]

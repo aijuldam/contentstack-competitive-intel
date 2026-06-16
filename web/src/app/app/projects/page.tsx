@@ -3,41 +3,30 @@ import Link from "next/link";
 import { Plus, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { requireAuthAndWorkspace } from "@/lib/auth/helpers";
+import { createClient } from "@/lib/db/server";
+import { getProjectsByWorkspace } from "@/lib/db/queries/projects";
+import { formatDistanceToNow } from "@/lib/utils/date";
+import type { Project } from "@/lib/db/types";
 
-export const metadata: Metadata = {
-  title: "Projects",
+export const metadata: Metadata = { title: "Projects" };
+
+const statusConfig: Record<
+  Project["status"],
+  { label: string; variant: "active" | "draft" | "secondary" }
+> = {
+  draft:    { label: "Draft",    variant: "draft"    },
+  active:   { label: "Active",   variant: "active"   },
+  archived: { label: "Archived", variant: "secondary" },
 };
 
-// TODO: replace with real data from Supabase
-const MOCK_PROJECTS = [
-  {
-    id: "proj_01",
-    name: "Acme RevOps Platform",
-    category: "Revenue Operations",
-    narrativeStatus: "complete" as const,
-    assetsGenerated: 2,
-    updatedAt: "2 hours ago",
-  },
-  {
-    id: "proj_02",
-    name: "Focal AI",
-    category: "AI-assisted QA",
-    narrativeStatus: "draft" as const,
-    assetsGenerated: 0,
-    updatedAt: "Yesterday",
-  },
-];
-
-const statusBadgeMap = {
-  complete: { label: "Narrative ready", variant: "active" as const },
-  draft: { label: "In progress", variant: "draft" as const },
-};
-
-export default function ProjectsPage() {
-  const isEmpty = false; // flip to true to preview empty state
+export default async function ProjectsPage() {
+  const { workspace } = await requireAuthAndWorkspace();
+  const supabase = createClient();
+  const projects = await getProjectsByWorkspace(supabase, workspace.id);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
@@ -55,36 +44,35 @@ export default function ProjectsPage() {
         className="mb-6"
       />
 
-      {isEmpty ? (
+      {projects.length === 0 ? (
         <EmptyState
           icon={FolderOpen}
           title="No projects yet"
           description="Create your first project to generate a canonical narrative and all your assets."
-          action={{ label: "Create project", href: "/app/projects/new" }}
+          action={{ label: "Create your first project", href: "/app/projects/new" }}
         />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
-          {MOCK_PROJECTS.map((project) => {
-            const badge = statusBadgeMap[project.narrativeStatus];
+          {projects.map((project) => {
+            const status = statusConfig[project.status];
             return (
-              <Link key={project.id} href={`/app/projects/${project.id}/overview`}>
+              <Link
+                key={project.id}
+                href={`/app/projects/${project.id}/overview`}
+              >
                 <Card hover>
                   <CardHeader>
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="label-xs mb-1">{project.category}</p>
-                        <CardTitle>{project.name}</CardTitle>
-                      </div>
-                      <Badge variant={badge.variant} className="shrink-0">
-                        {badge.label}
+                      <CardTitle className="text-sm">{project.name}</CardTitle>
+                      <Badge variant={status.variant} className="shrink-0">
+                        {status.label}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{project.assetsGenerated} asset{project.assetsGenerated !== 1 ? "s" : ""} generated</span>
-                      <span>Updated {project.updatedAt}</span>
-                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Updated {formatDistanceToNow(project.updated_at)}
+                    </p>
                   </CardContent>
                 </Card>
               </Link>

@@ -9,41 +9,43 @@ import {
   CreditCard,
   ChevronRight,
   Plus,
+  LogOut,
 } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { signOut } from "@/lib/auth/actions";
+import type { Workspace } from "@/lib/db/types";
+import type { User } from "@supabase/supabase-js";
 
 const navItems = [
-  {
-    label: "Projects",
-    href: "/app/projects",
-    icon: FolderOpen,
-  },
-  {
-    label: "Dashboard",
-    href: "/app",
-    icon: LayoutDashboard,
-    exact: true,
-  },
+  { label: "Projects", href: "/app/projects", icon: FolderOpen },
+  { label: "Dashboard", href: "/app", icon: LayoutDashboard, exact: true },
 ];
 
 const bottomItems = [
   { label: "Settings", href: "/app/settings", icon: Settings },
-  { label: "Billing", href: "/app/billing", icon: CreditCard },
+  { label: "Billing",  href: "/app/billing",  icon: CreditCard },
 ];
 
 interface SidebarProps {
   className?: string;
+  user: User;
+  workspace: Workspace;
 }
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, user, workspace }: SidebarProps) {
   const pathname = usePathname();
 
-  const isActive = (href: string, exact = false) => {
-    if (exact) return pathname === href;
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string, exact = false) =>
+    exact ? pathname === href : pathname.startsWith(href);
+
+  const userInitials = (user.user_metadata?.full_name as string | undefined)
+    ?.split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? "U";
 
   return (
     <aside
@@ -52,14 +54,17 @@ export function Sidebar({ className }: SidebarProps) {
         className
       )}
     >
-      {/* Logo */}
-      <div className="flex h-14 items-center border-b border-border px-4">
-        <Link href="/app">
-          <Logo size="sm" />
+      {/* Logo + workspace name */}
+      <div className="flex h-14 items-center gap-2 border-b border-border px-4">
+        <Link href="/app" className="flex min-w-0 items-center gap-2">
+          <Logo size="sm" variant="mark" />
+          <span className="truncate text-sm font-medium text-foreground">
+            {workspace.name}
+          </span>
         </Link>
       </div>
 
-      {/* New project CTA */}
+      {/* New project */}
       <div className="p-3">
         <Button size="sm" className="w-full justify-start gap-2" asChild>
           <Link href="/app/projects/new">
@@ -69,7 +74,7 @@ export function Sidebar({ className }: SidebarProps) {
         </Button>
       </div>
 
-      {/* Nav */}
+      {/* Primary nav */}
       <nav className="flex-1 space-y-0.5 px-2 py-1">
         {navItems.map((item) => (
           <Link
@@ -110,18 +115,27 @@ export function Sidebar({ className }: SidebarProps) {
         ))}
       </div>
 
-      {/* User stub */}
+      {/* User + sign out */}
       <div className="border-t border-border p-3">
-        <div className="flex items-center gap-2.5 rounded-md px-2 py-1.5">
+        <div className="flex items-center gap-2.5 px-2 py-1.5">
           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-2xs font-semibold text-primary">
-            U
+            {userInitials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-foreground">User</p>
-            <p className="truncate text-2xs text-muted-foreground">
-              user@company.com
+            <p className="truncate text-xs font-medium text-foreground">
+              {(user.user_metadata?.full_name as string | undefined) ?? "Account"}
             </p>
+            <p className="truncate text-2xs text-muted-foreground">{user.email}</p>
           </div>
+          <form action={signOut}>
+            <button
+              type="submit"
+              title="Sign out"
+              className="flex items-center justify-center rounded p-1 text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </form>
         </div>
       </div>
     </aside>

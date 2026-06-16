@@ -23,3 +23,9 @@ Thumbs.db
 # Environment
 .env
 .env.local
+.env.*.local
+
+# Next.js
+web/.next/
+web/out/
+web/node_modules/

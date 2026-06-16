@@ -3,9 +3,9 @@ import { cookies } from "next/headers";
 import type { Database } from "./types";
 
 // Server-side client — use in Server Components, Server Actions, Route Handlers.
-// Automatically reads and writes auth cookies from the request context.
-export function createClient() {
-  const cookieStore = cookies();
+// cookies() is async in Next.js 15+, so this function must be awaited.
+export async function createClient() {
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,8 +21,7 @@ export function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // setAll throws in Server Components (read-only cookie store).
-            // Safe to ignore — middleware handles cookie refresh on each request.
+            // Safe to ignore in Server Components — middleware handles refresh.
           }
         },
       },
@@ -31,10 +30,9 @@ export function createClient() {
 }
 
 // Service-role client — bypasses RLS.
-// Use only in trusted server-side code (e.g., workspace creation on signup).
-// Never expose this to the browser or client components.
-export function createServiceClient() {
-  const cookieStore = cookies();
+// Only use in trusted server-side code (e.g. workspace creation on signup).
+export async function createServiceClient() {
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,9 +47,7 @@ export function createServiceClient() {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
-          } catch {
-            // see note above
-          }
+          } catch {}
         },
       },
       auth: {

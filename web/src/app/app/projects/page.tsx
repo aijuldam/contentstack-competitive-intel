@@ -25,7 +25,7 @@ const statusConfig: Record<
 
 export default async function ProjectsPage() {
   const { workspace } = await requireAuthAndWorkspace();
-  const supabase = createClient();
+  const supabase = await createClient();
   const projects = await getProjectsByWorkspace(supabase, workspace.id);
 
   return (

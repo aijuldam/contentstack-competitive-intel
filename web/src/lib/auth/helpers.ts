@@ -6,7 +6,7 @@ import { getDefaultWorkspace } from "@/lib/db/queries/workspaces";
 
 // Returns the authenticated user or null. Does not redirect.
 export async function getCurrentUser(): Promise<User | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -22,7 +22,7 @@ export async function requireAuth(): Promise<User> {
 
 // Returns the user's default workspace, or null if they have none.
 export async function getUserWorkspace(): Promise<Workspace | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
   return getDefaultWorkspace(supabase);
 }
 
@@ -35,7 +35,7 @@ export async function requireAuthAndWorkspace(): Promise<{
 }> {
   const user = await requireAuth();
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const workspace = await getDefaultWorkspace(supabase);
 
   if (!workspace) {

@@ -53,7 +53,7 @@ export async function signUp(
   }
 
   const { name, email, password } = parsed.data;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -90,7 +90,7 @@ export async function signIn(
     return { fieldErrors: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
@@ -104,7 +104,7 @@ export async function signIn(
 // signOut
 // ─────────────────────────────────────────────────────────────────────────────
 export async function signOut(): Promise<void> {
-  const supabase = createClient();
+  const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
 }
@@ -126,7 +126,7 @@ export async function createWorkspace(
   }
 
   // Verify the session via the regular (anon) client first
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -134,7 +134,7 @@ export async function createWorkspace(
   if (!user) redirect("/login");
 
   // Use service client for the actual inserts (bypasses RLS)
-  const service = createServiceClient();
+  const service = await createServiceClient();
   const slug = await generateUniqueSlug(service, parsed.data.name);
 
   try {
@@ -155,7 +155,7 @@ export async function createWorkspace(
 // signInWithGoogle  (OAuth — redirects, no FormData)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function signInWithGoogle(): Promise<never> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

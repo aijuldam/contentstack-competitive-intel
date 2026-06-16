@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Surface */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 6%;
+
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 6%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 6%;
+
+    /* Primary — Indigo */
+    --primary: 239 84% 57%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    /* Muted */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Accent */
+    --accent: 220 14% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border / Input */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 57%;
+
+    /* Domain-specific tokens */
+    --verified: 160 84% 39%;
+    --verified-foreground: 0 0% 100%;
+    --inferred: 38 92% 50%;
+    --inferred-foreground: 0 0% 100%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 220 14% 96%;
+    --card: 222 47% 8%;
+    --card-foreground: 220 14% 96%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 220 14% 96%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 220 14% 96%;
+    --muted: 222 47% 11%;
+    --muted-foreground: 220 9% 54%;
+    --accent: 222 47% 11%;
+    --accent-foreground: 220 14% 96%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 47% 14%;
+    --input: 222 47% 14%;
+    --ring: 239 84% 67%;
+    --verified: 160 84% 44%;
+    --verified-foreground: 0 0% 100%;
+    --inferred: 38 92% 55%;
+    --inferred-foreground: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight;
+  }
+}
+
+@layer components {
+  .label-xs {
+    @apply text-2xs font-medium uppercase tracking-widest text-muted-foreground;
+  }
+
+  .prose-narrative {
+    @apply max-w-prose space-y-4 text-sm leading-relaxed text-foreground;
+  }
+
+  .section-divider {
+    @apply border-b border-border py-3;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded bg-muted;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-border;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/30;
+}

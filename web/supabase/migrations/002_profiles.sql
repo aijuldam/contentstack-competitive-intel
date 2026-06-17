@@ -21,7 +21,14 @@ create policy "profiles: owner update"
   on public.profiles for update
   using (auth.uid() = id);
 
--- Keep updated_at current on any row change.
+create or replace function public.handle_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
 create trigger profiles_updated_at
   before update on public.profiles
-  for each row execute procedure moddatetime(updated_at);
+  for each row execute procedure public.handle_updated_at();

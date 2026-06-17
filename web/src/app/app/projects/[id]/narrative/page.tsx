@@ -3,105 +3,63 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { Sparkles } from "lucide-react";
+import { createClient } from "@/lib/db/server";
+import { getCurrentFoundation } from "@/lib/services";
+import {
+  FOUNDATION_SECTION_LABELS,
+  MEDDIC_SECTION_LABELS,
+  type MessagingFoundation,
+} from "@/lib/schemas/foundation.schema";
+import { foundationConfidenceCounts } from "@/lib/schemas/foundation.map";
+import { ApproveFoundationButton } from "./ApproveFoundationButton";
+import type { GroundedBlock } from "@/lib/schemas/provenance";
 
 export const metadata: Metadata = { title: "Canonical narrative" };
 
-const MOCK_NARRATIVE = {
-  meddic: [
-    {
-      key: "identify_pain",
-      label: "Identify Pain",
-      content:
-        "RevOps teams spend 4–6 hours every week manually reconciling data across CRM, billing, and support tools. This creates forecast errors and deal slippage that compounds over time.",
-      confidence: "verified",
-    },
-    {
-      key: "metrics",
-      label: "Metrics",
-      content:
-        "Target outcome: 80% reduction in reconciliation time. CRM error rate reduction from ~12% to <1% (reference customer, unattributed).",
-      confidence: "inferred",
-    },
-    {
-      key: "economic_buyer",
-      label: "Economic Buyer",
-      content:
-        "VP of Revenue Operations at Series B–D SaaS companies ($10M–$100M ARR). Cares about forecast accuracy, data reliability, and team efficiency.",
-      confidence: "inferred",
-    },
-    {
-      key: "decision_criteria",
-      label: "Decision Criteria",
-      content: "Not yet specified. Add what the buyer evaluates vendors on.",
-      confidence: "inferred",
-    },
-    {
-      key: "decision_process",
-      label: "Decision Process",
-      content: "Not yet specified. Add typical procurement path and timeline.",
-      confidence: "inferred",
-    },
-    {
-      key: "champion",
-      label: "Champion",
-      content:
-        "Likely a RevOps Analyst or senior RevOps Manager who owns the reconciliation workflow and will sponsor the purchase internally.",
-      confidence: "inferred",
-    },
-  ],
-  cotm: [
-    {
-      key: "current_state",
-      label: "Current State",
-      content:
-        "RevOps teams export data manually from three systems every Monday morning. Errors are caught days later — sometimes not at all.",
-      confidence: "verified",
-    },
-    {
-      key: "negative_consequences",
-      label: "Negative Consequences",
-      content:
-        "Forecast errors persist into QBRs. Deals slip because CRM gaps go unnoticed. Analysts spend capacity on reconciliation instead of analysis.",
-      confidence: "verified",
-    },
-    {
-      key: "required_capabilities",
-      label: "Required Capabilities",
-      content:
-        "Bidirectional sync across CRM, billing, and support. No data warehouse required. Real-time or near-real-time updates.",
-      confidence: "verified",
-    },
-    {
-      key: "positive_outcomes",
-      label: "Positive Business Outcomes",
-      content:
-        "80% reduction in reconciliation time. Forecast accuracy improves measurably. Analysts shift from data hygiene to strategic work.",
-      confidence: "inferred",
-    },
-    {
-      key: "proof_points",
-      label: "Proof Points",
-      content:
-        "One customer reduced CRM error rate from 12% to under 1% in 30 days. No named attribution available yet.",
-      confidence: "inferred",
-    },
-    {
-      key: "differentiated_value",
-      label: "Differentiated Value",
-      content:
-        "The only tool that syncs bidirectionally without requiring a data warehouse. Competitors require ETL setup or a separate data layer.",
-      confidence: "inferred",
-    },
-  ],
-};
-
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function NarrativePage({ params: _ }: PageProps) {
+const COTM_KEYS = [
+  "current_state",
+  "negative_consequences",
+  "required_capabilities",
+  "differentiated_value",
+  "business_outcomes",
+  "positioning_summary",
+] as const satisfies ReadonlyArray<keyof MessagingFoundation>;
+
+export default async function NarrativePage({ params }: PageProps) {
+  const { id } = await params;
+  const client = await createClient();
+  const result = await getCurrentFoundation(client, id);
+
+  if (!result) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 text-center space-y-3">
+        <p className="text-sm font-medium">No foundation yet</p>
+        <p className="text-xs text-muted-foreground">
+          Go to Inputs and generate the Messaging Foundation first.
+        </p>
+        <Button size="sm" variant="outline" asChild>
+          <Link href={`/app/projects/${id}/inputs`}>
+            <Sparkles className="h-3.5 w-3.5" />
+            Go to Inputs
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const { version, foundation } = result;
+  const isApproved = !!version.approved_at;
+  const counts = foundationConfidenceCounts(foundation);
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 space-y-8">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold">Canonical Narrative</h2>
@@ -109,12 +67,17 @@ export default function NarrativePage({ params: _ }: PageProps) {
             Source of truth. All assets derive from this.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Badge variant="verified">Verified</Badge> 8
+            <Badge variant="verified">Verified</Badge> {counts.verified}
             <span className="mx-1">·</span>
-            <Badge variant="inferred">Inferred</Badge> 4
+            <Badge variant="inferred">Inferred</Badge> {counts.inferred}
           </div>
+          {isApproved ? (
+            <Badge variant="verified" className="gap-1">Approved</Badge>
+          ) : (
+            <ApproveFoundationButton narrativeVersionId={version.id} projectId={id} />
+          )}
         </div>
       </div>
 
@@ -125,54 +88,110 @@ export default function NarrativePage({ params: _ }: PageProps) {
           <Separator className="flex-1" />
         </div>
         <div className="space-y-3">
-          {MOCK_NARRATIVE.meddic.map((block) => (
-            <NarrativeBlock key={block.key} block={block} />
-          ))}
+          {(Object.keys(MEDDIC_SECTION_LABELS) as Array<keyof typeof MEDDIC_SECTION_LABELS>).map(
+            (key) => (
+              <FoundationBlock
+                key={key}
+                label={MEDDIC_SECTION_LABELS[key]}
+                block={foundation.meddic[key]}
+              />
+            )
+          )}
         </div>
       </section>
 
       {/* Command of the Message */}
       <section>
         <div className="flex items-center gap-3 mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Command of the Message</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">
+            Command of the Message
+          </h3>
           <Separator className="flex-1" />
         </div>
         <div className="space-y-3">
-          {MOCK_NARRATIVE.cotm.map((block) => (
-            <NarrativeBlock key={block.key} block={block} />
+          {COTM_KEYS.map((key) => (
+            <FoundationBlock
+              key={key}
+              label={FOUNDATION_SECTION_LABELS[key] ?? key.replace(/_/g, " ")}
+              block={foundation[key] as GroundedBlock}
+            />
           ))}
         </div>
       </section>
+
+      {/* Proof points */}
+      {foundation.proof_points.length > 0 && (
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">
+              Proof Points
+            </h3>
+            <Separator className="flex-1" />
+          </div>
+          <Card>
+            <CardContent className="pt-4">
+              <ul className="space-y-2">
+                {foundation.proof_points.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <Badge
+                      variant={item.confidence === "verified" ? "verified" : "inferred"}
+                      className="shrink-0 mt-0.5"
+                    >
+                      {item.confidence}
+                    </Badge>
+                    <span className="text-foreground">{item.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </section>
+      )}
+
+      {/* Missing inputs */}
+      {foundation.missing_inputs.length > 0 && (
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">
+              Missing Inputs
+            </h3>
+            <Separator className="flex-1" />
+          </div>
+          <Card className="border-amber-200 bg-amber-50/40">
+            <CardContent className="pt-4">
+              <ul className="space-y-1.5">
+                {foundation.missing_inputs.map((item) => (
+                  <li key={item} className="text-sm text-amber-800 flex gap-2 items-center">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </section>
+      )}
     </div>
   );
 }
 
-function NarrativeBlock({
-  block,
-}: {
-  block: { key: string; label: string; content: string; confidence: string };
-}) {
+function FoundationBlock({ label, block }: { label: string; block: GroundedBlock }) {
   return (
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {block.label}
+            {label}
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={block.confidence === "verified" ? "verified" : "inferred"}
-            >
-              {block.confidence}
-            </Badge>
-            <Button size="icon-sm" variant="ghost" className="text-muted-foreground">
-              ✎
-            </Button>
-          </div>
+          <Badge variant={block.confidence === "verified" ? "verified" : "inferred"}>
+            {block.confidence}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm leading-relaxed text-foreground">{block.content}</p>
+        <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+          {block.content}
+        </p>
       </CardContent>
     </Card>
   );

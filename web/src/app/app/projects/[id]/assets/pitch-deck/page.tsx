@@ -155,7 +155,7 @@ export default function PitchDeckPage() {
             <RefreshCw className="h-3.5 w-3.5" />
             Regenerate
           </Button>
-          <ExportScaffold assetType="pitch_deck" />
+          <ExportScaffold assetType="pitch_deck" projectId={projectId} />
         </div>
       </div>
 

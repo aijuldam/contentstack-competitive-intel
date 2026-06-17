@@ -20,3 +20,8 @@ export {
   type LogRunParams,
 } from "./generation-log.service";
 export { listPromptVersions, getPromptVersion } from "./prompt.service";
+export {
+  requestExport,
+  listExportJobsForProject,
+  type RequestExportParams,
+} from "./export.service";

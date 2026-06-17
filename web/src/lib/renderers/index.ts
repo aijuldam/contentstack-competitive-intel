@@ -1,16 +1,35 @@
-// Asset renderer stubs — Phase 2 will implement PDF/HTML rendering
-import type { Asset, AssetSection } from "@/types/asset";
+export { renderPitchDeck } from "./pitch-deck.renderer";
+export { renderOnePager } from "./one-pager.renderer";
+export { renderSalesDeck } from "./sales-deck.renderer";
+export type {
+  RenderContext,
+  RenderOutput,
+  PitchDeckRenderOutput,
+  OnePagerRenderOutput,
+  SalesDeckRenderOutput,
+  SlideData,
+  SectionData,
+  TabGroupData,
+  RendererFn,
+} from "./types";
 
-export type RenderFormat = "html" | "pdf" | "markdown";
+import type { AssetSection, AssetType } from "@/lib/schemas/asset.schema";
+import type { RenderContext, RenderOutput } from "./types";
+import { renderPitchDeck } from "./pitch-deck.renderer";
+import { renderOnePager } from "./one-pager.renderer";
+import { renderSalesDeck } from "./sales-deck.renderer";
 
-// Placeholder: renders asset sections to markdown
-export function renderAssetToMarkdown(asset: Asset): string {
-  return asset.sections
-    .map((section: AssetSection) => `## ${section.label}\n\n${section.content}`)
-    .join("\n\n---\n\n");
-}
-
-// TODO Phase 2: implement PDF export via puppeteer or react-pdf
-export async function renderAssetToPDF(_asset: Asset): Promise<Buffer> {
-  throw new Error("PDF export not yet implemented — coming in Phase 2.");
+export function render(
+  assetType: AssetType,
+  sections: AssetSection[],
+  context: RenderContext
+): RenderOutput {
+  switch (assetType) {
+    case "pitch_deck":
+      return renderPitchDeck(sections, context);
+    case "one_pager":
+      return renderOnePager(sections, context);
+    case "sales_deck":
+      return renderSalesDeck(sections, context);
+  }
 }

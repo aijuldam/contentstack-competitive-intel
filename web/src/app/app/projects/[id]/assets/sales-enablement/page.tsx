@@ -181,7 +181,7 @@ export default function SalesEnablementPage() {
             <RefreshCw className="h-3.5 w-3.5" />
             Regenerate
           </Button>
-          <ExportScaffold assetType="sales_deck" />
+          <ExportScaffold assetType="sales_deck" projectId={projectId} />
         </div>
       </div>
 

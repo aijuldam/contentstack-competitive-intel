@@ -16,7 +16,7 @@ export type RunType             =
   | "foundation"
   | "narrative"
   | "asset";
-export type ExportFormat        = "pdf" | "markdown" | "pptx";
+export type ExportFormat        = "html" | "pdf" | "markdown" | "pptx";
 export type ExportStatus        = "pending" | "processing" | "complete" | "error";
 export type ActivationEventType =
   | "project_created"
@@ -148,6 +148,8 @@ export interface GenerationRun {
 
 export interface ExportJob {
   id:                 string;
+  project_id:         string | null;  // added in migration 004
+  asset_id:           string | null;  // added in migration 004
   asset_version_id:   string;
   format:             ExportFormat;
   status:             ExportStatus;
@@ -266,6 +268,8 @@ export interface ActivationEventInsert {
 }
 
 export interface ExportJobInsert {
+  project_id?:      string | null;
+  asset_id?:        string | null;
   asset_version_id: string;
   format:           ExportFormat;
   status:           ExportStatus;

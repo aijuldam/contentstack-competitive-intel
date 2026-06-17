@@ -13,6 +13,7 @@ const tabs = [
   { label: "Inputs", path: "inputs" },
   { label: "Narrative", path: "narrative" },
   { label: "Assets", path: "assets" },
+  { label: "Exports", path: "exports" },
   { label: "Versions", path: "versions" },
 ];
 

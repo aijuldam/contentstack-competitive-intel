@@ -127,7 +127,7 @@ export default function OnePagerPage() {
             <RefreshCw className="h-3.5 w-3.5" />
             Regenerate
           </Button>
-          <ExportScaffold assetType="one_pager" />
+          <ExportScaffold assetType="one_pager" projectId={projectId} />
         </div>
       </div>
 

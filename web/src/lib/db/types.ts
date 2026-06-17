@@ -142,15 +142,93 @@ export interface ActivationEvent {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Insert types (omit server-generated fields)
+// Insert types — nullable and DB-defaulted fields are optional
 // ─────────────────────────────────────────────────────────────────────────────
-export type WorkspaceInsert = Omit<Workspace, "id" | "created_at" | "updated_at">;
-export type ProjectInsert   = Omit<Project,   "id" | "created_at" | "updated_at">;
-export type ProjectSourceInsert = Omit<ProjectSource, "id" | "created_at" | "updated_at">;
-export type NarrativeVersionInsert = Omit<NarrativeVersion, "id" | "created_at">;
-export type AssetInsert = Omit<Asset, "id" | "created_at" | "updated_at">;
-export type AssetVersionInsert = Omit<AssetVersion, "id" | "created_at">;
-export type GenerationRunInsert = Omit<GenerationRun, "id" | "created_at">;
+export interface WorkspaceInsert {
+  name:      string;
+  slug:      string;
+  owner_id:  string;
+  plan:      string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ProjectInsert {
+  workspace_id: string;
+  name:         string;
+  status:       ProjectStatus;
+  created_by?:  string | null;
+}
+
+export interface ProjectSourceInsert {
+  project_id:           string;
+  raw_input:            RawInput;
+  normalized_json?:     NormalizedJson | null;
+  confidence_score?:    number | null;
+  normalization_status: NormalizationStatus;
+}
+
+export interface NarrativeVersionInsert {
+  project_id:        string;
+  version_number:    number;
+  meddic_blocks?:    MEDDICBlocks | null;
+  cotm_blocks?:      CotMBlocks | null;
+  generation_status: GenerationStatus;
+  is_current:        boolean;
+  created_by?:       string | null;
+}
+
+export interface AssetInsert {
+  project_id:        string;
+  asset_type:        AssetType;
+  generation_status: GenerationStatus;
+  first_opened_at?:  string | null;
+}
+
+export interface AssetVersionInsert {
+  asset_id:             string;
+  narrative_version_id?: string | null;
+  version_number:        number;
+  sections?:             AssetSection[] | null;
+  generation_status:     GenerationStatus;
+  is_current:            boolean;
+  created_by?:           string | null;
+}
+
+export interface GenerationRunInsert {
+  project_id:     string;
+  run_type:       RunType;
+  status:         GenerationStatus;
+  input_hash?:    string | null;
+  output_ref?:    { table: string; id: string } | null;
+  error_message?: string | null;
+  started_at?:    string | null;
+  completed_at?:  string | null;
+}
+
+export interface WorkspaceMemberInsert {
+  workspace_id: string;
+  user_id:      string;
+  role:         WorkspaceRole;
+  invited_by?:  string | null;
+}
+
+export interface ActivationEventInsert {
+  user_id:      string;
+  workspace_id: string;
+  project_id?:  string | null;
+  event_type:   ActivationEventType;
+  asset_type?:  string | null;
+  metadata?:    Record<string, unknown>;
+}
+
+export interface ExportJobInsert {
+  asset_version_id: string;
+  format:           ExportFormat;
+  status:           ExportStatus;
+  storage_path?:    string | null;
+  error_message?:   string | null;
+  completed_at?:    string | null;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Nested JSON shapes stored in jsonb columns
@@ -205,23 +283,36 @@ export interface AssetSection {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Makes Row/Insert/Update satisfy GenericTable's Record<string, unknown> constraint.
+// supabase-js v2.108+ conditional type check requires an explicit index signature.
+type WithIndex<T> = T & Record<string, unknown>;
+type TD<R, I, U = I> = {
+  Row:          WithIndex<R>;
+  Insert:       WithIndex<I>;
+  Update:       WithIndex<U>;
+  Relationships: never[];
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Database type map for Supabase client generics
 // ─────────────────────────────────────────────────────────────────────────────
 export interface Database {
   public: {
     Tables: {
-      workspaces:          { Row: Workspace;          Insert: WorkspaceInsert;          Update: Partial<WorkspaceInsert> };
-      workspace_members:   { Row: WorkspaceMember;    Insert: Omit<WorkspaceMember, "id" | "joined_at">; Update: Partial<WorkspaceMember> };
-      projects:            { Row: Project;            Insert: ProjectInsert;            Update: Partial<ProjectInsert> };
-      project_sources:     { Row: ProjectSource;      Insert: ProjectSourceInsert;      Update: Partial<ProjectSourceInsert> };
-      brand_profiles:      { Row: BrandProfile;       Insert: Omit<BrandProfile, "id" | "created_at" | "updated_at">; Update: Partial<BrandProfile> };
-      narrative_versions:  { Row: NarrativeVersion;   Insert: NarrativeVersionInsert;   Update: Partial<NarrativeVersionInsert> };
-      assets:              { Row: Asset;               Insert: AssetInsert;              Update: Partial<AssetInsert> };
-      asset_versions:      { Row: AssetVersion;        Insert: AssetVersionInsert;       Update: Partial<AssetVersionInsert> };
-      generation_runs:     { Row: GenerationRun;       Insert: GenerationRunInsert;      Update: Partial<GenerationRunInsert> };
-      export_jobs:         { Row: ExportJob;           Insert: Omit<ExportJob, "id" | "created_at">; Update: Partial<ExportJob> };
-      activation_events:   { Row: ActivationEvent;     Insert: Omit<ActivationEvent, "id" | "created_at">; Update: never };
+      workspaces:          TD<Workspace,          WorkspaceInsert,          Partial<WorkspaceInsert>>;
+      workspace_members:   TD<WorkspaceMember,    WorkspaceMemberInsert,     Partial<WorkspaceMemberInsert>>;
+      projects:            TD<Project,            ProjectInsert,             Partial<ProjectInsert>>;
+      project_sources:     TD<ProjectSource,      ProjectSourceInsert,      Partial<ProjectSourceInsert>>;
+      brand_profiles:      TD<BrandProfile,       Omit<BrandProfile, "id" | "created_at" | "updated_at">, Partial<BrandProfile>>;
+      narrative_versions:  TD<NarrativeVersion,   NarrativeVersionInsert,   Partial<NarrativeVersionInsert>>;
+      assets:              TD<Asset,              AssetInsert,              Partial<AssetInsert>>;
+      asset_versions:      TD<AssetVersion,       AssetVersionInsert,       Partial<AssetVersionInsert>>;
+      generation_runs:     TD<GenerationRun,      GenerationRunInsert,      Partial<GenerationRunInsert>>;
+      export_jobs:         TD<ExportJob,          ExportJobInsert,          Partial<ExportJobInsert>>;
+      activation_events:   TD<ActivationEvent,    ActivationEventInsert,    never>;
     };
+    Views:     Record<string, never>;
+    Functions: Record<string, never>;
     Enums: {
       workspace_role:       WorkspaceRole;
       project_status:       ProjectStatus;

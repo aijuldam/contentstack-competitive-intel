@@ -11,7 +11,10 @@ export async function getUserWorkspaces(client: Client): Promise<Workspace[]> {
     .order("joined_at", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []).map((row) => row.workspace as unknown as Workspace);
+  type JoinRow = { workspace: Workspace | null };
+  return ((data as unknown as JoinRow[]) ?? []).flatMap((r) =>
+    r.workspace ? [r.workspace] : []
+  );
 }
 
 // Returns the first (oldest) workspace for the user — used as the default.

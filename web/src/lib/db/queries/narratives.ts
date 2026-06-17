@@ -2,7 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   Database,
   NarrativeVersion,
-  NarrativeVersionInsert,
   MEDDICBlocks,
   CotMBlocks,
 } from "../types";
@@ -74,19 +73,17 @@ export async function createNarrativeVersion(
     .eq("is_current", true);
 
   // Insert the new current version
-  const insert: NarrativeVersionInsert = {
-    project_id:        projectId,
-    version_number:    nextVersion,
-    meddic_blocks:     meddic_blocks ?? null,
-    cotm_blocks:       cotm_blocks ?? null,
-    generation_status: "pending",
-    is_current:        true,
-    created_by:        created_by ?? null,
-  };
-
   const { data, error } = await client
     .from("narrative_versions")
-    .insert(insert)
+    .insert({
+      project_id:        projectId,
+      version_number:    nextVersion,
+      meddic_blocks:     meddic_blocks ?? null,
+      cotm_blocks:       cotm_blocks ?? null,
+      generation_status: "pending" as const,
+      is_current:        true,
+      created_by:        created_by ?? null,
+    })
     .select()
     .single();
 

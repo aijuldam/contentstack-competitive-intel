@@ -29,8 +29,8 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-1">
             <Logo size="sm" />
             <p className="mt-3 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              MEDDIC-aligned messaging, pitch decks, and sales assets — from
-              a single 10-minute intake.
+              MEDDIC and Command of the Message baked into your pitch deck,
+              one-pager, and sales enablement deck.
             </p>
           </div>
           {Object.entries(footerLinks).map(([group, links]) => (
@@ -55,8 +55,10 @@ export function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Product Marketing Taste. All rights reserved.</p>
-          <div className="flex gap-4">
+          <p>© {new Date().getFullYear()} Go-to-Market Taste. All rights reserved.</p>
+          <div className="flex gap-6">
+            <Link href="/login" className="hover:text-foreground transition-colors">Sign in</Link>
+            <Link href="/signup" className="hover:text-foreground transition-colors">Create account</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Terms</Link>
           </div>

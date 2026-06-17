@@ -16,16 +16,16 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Product Marketing Taste — Structured sales messaging for B2B SaaS",
-    template: "%s | Product Marketing Taste",
+    default: "Go-to-Market Taste: Structured sales messaging for B2B SaaS",
+    template: "%s | Go-to-Market Taste",
   },
   description:
-    "Turn a 10-minute product intake into MEDDIC-aligned messaging, pitch decks, one-pagers, and sales enablement assets.",
+    "Fill in four fields. Get a structured MEDDIC-aligned narrative, a pitch deck, a one-pager, and a sales enablement deck.",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
-    siteName: "Product Marketing Taste",
+    siteName: "Go-to-Market Taste",
   },
 };
 

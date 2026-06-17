@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Simple, transparent pricing.",
+  description: "Simple, transparent pricing for Go-to-Market Taste.",
 };
 
 const plans = [
@@ -17,12 +17,12 @@ const plans = [
     description: "For founders and solo PMMs getting started.",
     features: [
       "3 projects",
-      "Canonical narrative generation",
+      "Core narrative generation",
       "All 3 asset types",
       "Inline editing",
       "Verified vs. inferred tagging",
     ],
-    cta: "Get started free",
+    cta: "Start free",
     href: "/signup",
     highlighted: false,
   },
@@ -55,27 +55,43 @@ const plans = [
       "Dedicated support",
     ],
     cta: "Contact us",
-    href: "mailto:hello@narrativekit.com",
+    href: "mailto:hello@gotomarkettaste.com",
     highlighted: false,
   },
+];
+
+const comparisons = [
+  { feature: "Projects", starter: "3", pro: "Unlimited", team: "Unlimited" },
+  { feature: "Core narrative generation", starter: "Yes", pro: "Yes", team: "Yes" },
+  { feature: "Asset types (pitch deck, one-pager, sales deck)", starter: "All 3", pro: "All 3", team: "All 3" },
+  { feature: "Inline editing", starter: "Yes", pro: "Yes", team: "Yes" },
+  { feature: "Verified vs. inferred tagging", starter: "Yes", pro: "Yes", team: "Yes" },
+  { feature: "PDF export", starter: "No", pro: "Yes", team: "Yes" },
+  { feature: "Narrative versioning", starter: "No", pro: "Yes", team: "Yes" },
+  { feature: "Team workspaces", starter: "No", pro: "No", team: "Yes" },
+  { feature: "SSO", starter: "No", pro: "No", team: "Yes" },
+  { feature: "Support", starter: "Community", pro: "Email", team: "Dedicated" },
 ];
 
 export default function PricingPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+
+      {/* Header */}
       <div className="mb-12 text-center">
         <Badge variant="secondary" className="mb-4">Pricing</Badge>
         <h1 className="text-3xl font-bold tracking-tight">Simple, transparent pricing</h1>
         <p className="mt-3 text-muted-foreground">
-          Start free. Upgrade when you need more.
+          Start free. Upgrade when you need more projects or team features.
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      {/* Plan cards */}
+      <div className="mb-16 grid gap-6 md:grid-cols-3">
         {plans.map((plan) => (
           <Card
             key={plan.name}
-            className={plan.highlighted ? "border-primary shadow-card-hover" : ""}
+            className={plan.highlighted ? "border-primary shadow-card" : ""}
           >
             <CardHeader>
               {plan.highlighted && (
@@ -113,9 +129,50 @@ export default function PricingPage() {
         ))}
       </div>
 
-      <p className="mt-10 text-center text-sm text-muted-foreground">
-        Stripe billing coming soon. Pricing is illustrative.
-      </p>
+      {/* Comparison table */}
+      <div className="mb-12">
+        <h2 className="mb-6 text-center text-lg font-semibold">Full comparison</h2>
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/30">
+                <th className="px-4 py-3 text-left font-medium text-foreground">Feature</th>
+                <th className="px-4 py-3 text-center font-medium text-foreground">Starter</th>
+                <th className="px-4 py-3 text-center font-medium text-primary">Pro</th>
+                <th className="px-4 py-3 text-center font-medium text-foreground">Team</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {comparisons.map((row) => (
+                <tr key={row.feature} className="hover:bg-muted/20">
+                  <td className="px-4 py-3 text-muted-foreground">{row.feature}</td>
+                  <td className="px-4 py-3 text-center text-muted-foreground">{row.starter}</td>
+                  <td className="px-4 py-3 text-center font-medium text-foreground">{row.pro}</td>
+                  <td className="px-4 py-3 text-center text-muted-foreground">{row.team}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* FAQ note */}
+      <div className="rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center">
+        <p className="mb-1 text-sm font-medium text-foreground">Questions about which plan fits?</p>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Start with the Starter plan. You can upgrade at any time without losing your work.
+          Stripe billing is coming soon. Pricing shown is illustrative.
+        </p>
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+          <Button asChild>
+            <Link href="/signup">Start free</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/faq">Read the FAQ</Link>
+          </Button>
+        </div>
+      </div>
+
     </div>
   );
 }

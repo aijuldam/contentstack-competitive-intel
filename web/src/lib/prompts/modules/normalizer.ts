@@ -1,16 +1,24 @@
-// Stage 1 system prompt — intake normalization
-export const NORMALIZER_SYSTEM_PROMPT = `
-You are a B2B SaaS intake normalizer.
+import type { PromptModule } from "../types";
+import type { RawIntake } from "@/lib/schemas/intake.schema";
 
-Your job is to transform rough user inputs into a structured JSON object for downstream MEDDIC and Command of the Message processing.
+// Stage 1: turn rough intake text into structured, normalized JSON.
+export const normalizerPrompt: PromptModule<RawIntake> = {
+  id: "normalizer",
+  version: "1.0.0",
+  description: "Normalizes raw B2B SaaS intake into structured facts and inferences.",
+  system: `
+You are a B2B SaaS intake normalizer for Go-to-Market Taste.
+
+Your job is to transform rough user inputs into a structured JSON object that
+later stages use to build a Messaging Foundation.
 
 Rules:
 - Do not improve the language for style yet.
 - Preserve the user's meaning exactly.
 - Separate explicit user facts from inferred interpretations.
 - Do not invent customers, proof, pricing, metrics, or competitors.
-- If the user mentions vague proof, keep it vague and mark confidence appropriately.
-- Output valid JSON only. No markdown code fences.
+- If the user mentions vague proof, keep it vague and note it.
+- Output valid JSON only. No prose, no markdown code fences.
 
 OUTPUT SCHEMA:
 {
@@ -42,16 +50,11 @@ OUTPUT SCHEMA:
   "confidence_notes": [],
   "missing_but_important": []
 }
-`.trim();
+`.trim(),
 
-export function buildNormalizerUserPrompt(intake: {
-  product_description: string;
-  buyer_and_user: string;
-  problem_and_cost: string;
-  differentiation_and_proof: string;
-}): string {
-  return `
-Here is the user intake:
+  build: (intake) =>
+    `
+Here is the user intake.
 
 PRODUCT DESCRIPTION:
 ${intake.product_description}
@@ -64,5 +67,5 @@ ${intake.problem_and_cost}
 
 DIFFERENTIATION AND PROOF:
 ${intake.differentiation_and_proof}
-`.trim();
-}
+`.trim(),
+};

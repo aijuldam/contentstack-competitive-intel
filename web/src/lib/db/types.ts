@@ -9,7 +9,13 @@ export type ProjectStatus       = "draft" | "active" | "archived";
 export type NormalizationStatus = "pending" | "complete" | "error";
 export type GenerationStatus    = "pending" | "running" | "complete" | "error";
 export type AssetType           = "pitch_deck" | "one_pager" | "sales_deck";
-export type RunType             = "normalize" | "narrative" | "asset";
+export type RunType             =
+  | "normalize"
+  | "enrichment"
+  | "gap_analysis"
+  | "foundation"
+  | "narrative"
+  | "asset";
 export type ExportFormat        = "pdf" | "markdown" | "pptx";
 export type ExportStatus        = "pending" | "processing" | "complete" | "error";
 export type ActivationEventType =
@@ -82,15 +88,22 @@ export interface BrandProfile {
 }
 
 export interface NarrativeVersion {
-  id:                string;
-  project_id:        string;
-  version_number:    number;
-  meddic_blocks:     MEDDICBlocks | null;
-  cotm_blocks:       CotMBlocks | null;
-  generation_status: GenerationStatus;
-  is_current:        boolean;
-  created_by:        string | null;
-  created_at:        string;
+  id:                  string;
+  project_id:          string;
+  version_number:      number;
+  meddic_blocks:       MEDDICBlocks | null;
+  cotm_blocks:         CotMBlocks | null;
+  // Full Messaging Foundation document (superset of the legacy blocks above).
+  foundation:          FoundationJson | null;
+  prompt_version:      string | null;
+  generation_metadata: GenerationMetadataJson | null;
+  // Set when a user approves this version; assets may only derive from approved versions.
+  approved_at:         string | null;
+  approved_by:         string | null;
+  generation_status:   GenerationStatus;
+  is_current:          boolean;
+  created_by:          string | null;
+  created_at:          string;
 }
 
 export interface Asset {
@@ -109,6 +122,8 @@ export interface AssetVersion {
   narrative_version_id:  string | null;
   version_number:        number;
   sections:              AssetSection[] | null;
+  prompt_version:        string | null;
+  generation_metadata:   GenerationMetadataJson | null;
   generation_status:     GenerationStatus;
   is_current:            boolean;
   created_by:            string | null;
@@ -116,16 +131,19 @@ export interface AssetVersion {
 }
 
 export interface GenerationRun {
-  id:            string;
-  project_id:    string;
-  run_type:      RunType;
-  status:        GenerationStatus;
-  input_hash:    string | null;
-  output_ref:    { table: string; id: string } | null;
-  error_message: string | null;
-  started_at:    string | null;
-  completed_at:  string | null;
-  created_at:    string;
+  id:             string;
+  project_id:     string;
+  run_type:       RunType;
+  status:         GenerationStatus;
+  input_hash:     string | null;
+  output_ref:     { table: string; id: string } | null;
+  prompt_version: string | null;
+  attempts:       number;
+  debug:          Record<string, unknown> | null;
+  error_message:  string | null;
+  started_at:     string | null;
+  completed_at:   string | null;
+  created_at:     string;
 }
 
 export interface ExportJob {
@@ -184,13 +202,18 @@ export interface ProjectSourceInsert {
 }
 
 export interface NarrativeVersionInsert {
-  project_id:        string;
-  version_number:    number;
-  meddic_blocks?:    MEDDICBlocks | null;
-  cotm_blocks?:      CotMBlocks | null;
-  generation_status: GenerationStatus;
-  is_current:        boolean;
-  created_by?:       string | null;
+  project_id:           string;
+  version_number:       number;
+  meddic_blocks?:       MEDDICBlocks | null;
+  cotm_blocks?:         CotMBlocks | null;
+  foundation?:          FoundationJson | null;
+  prompt_version?:      string | null;
+  generation_metadata?: GenerationMetadataJson | null;
+  approved_at?:         string | null;
+  approved_by?:         string | null;
+  generation_status:    GenerationStatus;
+  is_current:           boolean;
+  created_by?:          string | null;
 }
 
 export interface AssetInsert {
@@ -201,24 +224,29 @@ export interface AssetInsert {
 }
 
 export interface AssetVersionInsert {
-  asset_id:             string;
+  asset_id:              string;
   narrative_version_id?: string | null;
   version_number:        number;
   sections?:             AssetSection[] | null;
+  prompt_version?:       string | null;
+  generation_metadata?:  GenerationMetadataJson | null;
   generation_status:     GenerationStatus;
   is_current:            boolean;
   created_by?:           string | null;
 }
 
 export interface GenerationRunInsert {
-  project_id:     string;
-  run_type:       RunType;
-  status:         GenerationStatus;
-  input_hash?:    string | null;
-  output_ref?:    { table: string; id: string } | null;
-  error_message?: string | null;
-  started_at?:    string | null;
-  completed_at?:  string | null;
+  project_id:      string;
+  run_type:        RunType;
+  status:          GenerationStatus;
+  input_hash?:     string | null;
+  output_ref?:     { table: string; id: string } | null;
+  prompt_version?: string | null;
+  attempts?:       number;
+  debug?:          Record<string, unknown> | null;
+  error_message?:  string | null;
+  started_at?:     string | null;
+  completed_at?:   string | null;
 }
 
 export interface WorkspaceMemberInsert {
@@ -294,9 +322,19 @@ export interface AssetSection {
   label:         string;
   content:       string;
   source_blocks: string[];
+  provenance?:   "user_provided" | "inferred" | "unknown";
   confidence:    "verified" | "inferred";
+  needs_validation?: boolean;
   user_edited:   boolean;
 }
+
+// The full Messaging Foundation document, stored as jsonb. Kept structurally
+// opaque here so the db layer stays decoupled from the zod schema; the service
+// layer validates and casts it to MessagingFoundation on read/write.
+export type FoundationJson = Record<string, unknown>;
+
+// Generation metadata (prompt ref, model, attempts, usage), stored as jsonb.
+export type GenerationMetadataJson = Record<string, unknown>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Makes Row/Insert/Update satisfy GenericTable's Record<string, unknown> constraint.

@@ -6,62 +6,43 @@ import {
   Presentation,
   ArrowRight,
   Lock,
-  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { requireAuthAndWorkspace } from "@/lib/auth/helpers";
+import { createClient } from "@/lib/db/server";
+import { getCurrentFoundation } from "@/lib/services/foundation.service";
+import { formatDistanceToNow } from "@/lib/utils/date";
 
 export const metadata: Metadata = { title: "Assets" };
 
-// Mock data: replace with Supabase query once server actions are wired.
-const MOCK_FOUNDATION = {
-  approved: true,
-  version: 2,
-  approvedAt: "Jun 14, 2026",
-};
-
-const MOCK_ASSETS = [
+const ASSET_DEFS = [
   {
     slug: "pitch-deck",
-    type: "pitch_deck" as const,
     icon: Presentation,
     label: "Pitch Deck",
     description:
       "8-slide narrative: problem, cost, solution, differentiation, proof, outcomes, and CTA.",
     sectionCount: 8,
-    status: "complete" as const,
-    version: 2,
-    generatedAt: "Jun 14, 2026",
-    hasDrift: false,
   },
   {
     slug: "one-pager",
-    type: "one_pager" as const,
     icon: FileText,
     label: "One-Pager",
     description:
       "Single-page leave-behind for champions. Skimmable, framework-aligned.",
     sectionCount: 7,
-    status: "complete" as const,
-    version: 1,
-    generatedAt: "Jun 12, 2026",
-    hasDrift: true,
   },
   {
     slug: "sales-enablement",
-    type: "sales_deck" as const,
     icon: LayoutTemplate,
     label: "Sales Enablement Deck",
     description:
-      "10-section AE playbook with discovery questions, objection handling, and competitive angles.",
-    sectionCount: 10,
-    status: "pending" as const,
-    version: null,
-    generatedAt: null,
-    hasDrift: false,
+      "AE playbook with discovery questions, objection handling, and competitive angles.",
+    sectionCount: 9,
   },
-];
+] as const;
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -69,7 +50,15 @@ interface PageProps {
 
 export default async function AssetsPage({ params }: PageProps) {
   const { id } = await params;
-  const foundationApproved = MOCK_FOUNDATION.approved;
+  await requireAuthAndWorkspace();
+
+  const client = await createClient();
+  const result = await getCurrentFoundation(client, id);
+
+  const hasFoundation = result !== null;
+  const foundationApproved = result !== null && result.version.approved_at !== null;
+  const versionNumber = result?.version.version_number ?? null;
+  const approvedAt = result?.version.approved_at ?? null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
@@ -84,25 +73,31 @@ export default async function AssetsPage({ params }: PageProps) {
       <div className="mb-5 flex items-center justify-between rounded-lg border border-border bg-muted/20 px-4 py-3">
         <div className="flex items-center gap-2 text-xs">
           <span className="text-muted-foreground">Messaging Foundation</span>
-          {foundationApproved ? (
+          {!hasFoundation && <Badge variant="secondary">Not generated</Badge>}
+          {hasFoundation && !foundationApproved && <Badge variant="draft">Pending approval</Badge>}
+          {foundationApproved && (
             <>
-              <Badge variant="active">Approved v{MOCK_FOUNDATION.version}</Badge>
-              <span className="text-muted-foreground">{MOCK_FOUNDATION.approvedAt}</span>
+              <Badge variant="active">
+                Approved{versionNumber !== null ? ` v${versionNumber}` : ""}
+              </Badge>
+              {approvedAt && (
+                <span className="text-muted-foreground">
+                  {formatDistanceToNow(approvedAt)}
+                </span>
+              )}
             </>
-          ) : (
-            <Badge variant="draft">Not approved</Badge>
           )}
         </div>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={`/app/projects/${id}/narrative`}>
-            Review foundation
+          <Link href={`/app/projects/${id}/${hasFoundation ? "narrative" : "inputs"}`}>
+            {hasFoundation ? "Review foundation" : "Start intake"}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </Button>
       </div>
 
       <div className="space-y-3">
-        {MOCK_ASSETS.map((asset) => (
+        {ASSET_DEFS.map((asset) => (
           <Card key={asset.slug}>
             <CardContent className="flex items-start gap-4 py-5">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted">
@@ -111,58 +106,24 @@ export default async function AssetsPage({ params }: PageProps) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-0.5">
                   <h3 className="text-sm font-semibold">{asset.label}</h3>
-                  {asset.status === "complete" && (
-                    <Badge variant="active">
-                      v{asset.version}
-                    </Badge>
-                  )}
-                  {asset.status === "pending" && (
-                    <Badge variant="secondary">Not generated</Badge>
-                  )}
-                  {asset.hasDrift && (
-                    <Badge variant="inferred">Foundation updated</Badge>
-                  )}
+                  <Badge variant="secondary">Not generated</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">{asset.description}</p>
-                {asset.generatedAt && (
-                  <p className="mt-1 text-2xs text-muted-foreground">
-                    {asset.sectionCount} sections · Generated {asset.generatedAt}
-                  </p>
-                )}
+                <p className="mt-1 text-2xs text-muted-foreground">
+                  {asset.sectionCount} sections
+                </p>
               </div>
               <div className="shrink-0">
-                {asset.status === "pending" ? (
-                  <Button
-                    size="sm"
-                    disabled={!foundationApproved}
-                    asChild={foundationApproved}
-                  >
-                    {foundationApproved ? (
-                      <Link href={`/app/projects/${id}/assets/${asset.slug}`}>
-                        Generate
-                      </Link>
-                    ) : (
-                      "Generate"
-                    )}
-                  </Button>
-                ) : (
-                  <div className="flex gap-1.5">
-                    {asset.hasDrift && (
-                      <Button size="sm" variant="outline" asChild>
-                        <Link href={`/app/projects/${id}/assets/${asset.slug}`}>
-                          <RefreshCw className="h-3.5 w-3.5" />
-                          Regen
-                        </Link>
-                      </Button>
-                    )}
-                    <Button size="sm" variant="outline" asChild>
-                      <Link href={`/app/projects/${id}/assets/${asset.slug}`}>
-                        Open
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </Button>
-                  </div>
-                )}
+                <Button size="sm" disabled={!foundationApproved} asChild={foundationApproved}>
+                  {foundationApproved ? (
+                    <Link href={`/app/projects/${id}/assets/${asset.slug}`}>
+                      Open
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  ) : (
+                    "Open"
+                  )}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -173,14 +134,16 @@ export default async function AssetsPage({ params }: PageProps) {
         <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-4 py-3">
           <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">
-            Approve the Messaging Foundation before generating assets. Go to{" "}
-            <Link
-              href={`/app/projects/${id}/narrative`}
-              className="underline underline-offset-2"
-            >
-              Narrative
-            </Link>{" "}
-            to review and approve.
+            {hasFoundation
+              ? <>Approve the Messaging Foundation before opening assets. Go to{" "}
+                  <Link href={`/app/projects/${id}/narrative`} className="underline underline-offset-2">
+                    Narrative
+                  </Link>{" "}to review and approve.</>
+              : <>Generate and approve a Messaging Foundation first. Go to{" "}
+                  <Link href={`/app/projects/${id}/inputs`} className="underline underline-offset-2">
+                    Inputs
+                  </Link>{" "}to start.</>
+            }
           </p>
         </div>
       )}

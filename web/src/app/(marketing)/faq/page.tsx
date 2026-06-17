@@ -64,7 +64,7 @@ const faqGroups = [
       },
       {
         q: "Can I export the content?",
-        a: "PDF export is coming in a future update. Currently, all assets are editable and copyable in-app.",
+        a: "HTML export is available now for paid plan users — download any asset as a standalone HTML file. PDF and PPTX exports are coming in a future update.",
       },
     ],
   },
@@ -73,7 +73,7 @@ const faqGroups = [
     faqs: [
       {
         q: "Is there a free plan?",
-        a: "Yes. The Starter plan is free and includes 3 projects, core narrative generation, and all three asset types. No credit card required.",
+        a: "Yes. The free plan gives you access to the MEDDIC and Command of the Message framework guides, messaging templates, and example GTM asset outputs. No credit card required. To create projects and generate real assets from your own intake, upgrade to the paid plan at €5/month.",
       },
       {
         q: "Why do you ask for a work email?",
@@ -81,7 +81,7 @@ const faqGroups = [
       },
       {
         q: "When is billing available?",
-        a: "Stripe billing for Pro and Team plans is coming soon. Current pricing is illustrative. Starter will remain free when billing launches.",
+        a: "The paid plan is priced at €5/month. Stripe checkout is being activated shortly — the pricing is confirmed and billing will go live soon.",
       },
     ],
   },

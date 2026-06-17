@@ -12,7 +12,7 @@ export default function LoginPage() {
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Sign in to your Product Marketing Taste account.</CardDescription>
+          <CardDescription>Sign in to your Go-to-Market Taste account.</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

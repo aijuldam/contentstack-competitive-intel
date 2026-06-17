@@ -56,21 +56,7 @@ export default async function ProjectsPage() {
         />
       )}
 
-      {canCreate && projects.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center">
-          <FolderOpen className="mx-auto mb-3 h-8 w-8 text-muted-foreground/40" />
-          <p className="mb-1 text-sm font-medium">No projects yet</p>
-          <p className="mb-4 text-xs text-muted-foreground">
-            Create your first project to generate a canonical narrative and all your assets.
-          </p>
-          <Button size="sm" asChild>
-            <Link href="/app/projects/new">
-              <Plus className="h-3.5 w-3.5" />
-              Create your first project
-            </Link>
-          </Button>
-        </div>
-      ) : canCreate && projects.length > 0 ? (
+      {projects.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {projects.map((project) => {
             const status = statusConfig[project.status];
@@ -97,6 +83,20 @@ export default async function ProjectsPage() {
               </Link>
             );
           })}
+        </div>
+      ) : canCreate ? (
+        <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center">
+          <FolderOpen className="mx-auto mb-3 h-8 w-8 text-muted-foreground/40" />
+          <p className="mb-1 text-sm font-medium">No projects yet</p>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Create your first project to generate a canonical narrative and all your assets.
+          </p>
+          <Button size="sm" asChild>
+            <Link href="/app/projects/new">
+              <Plus className="h-3.5 w-3.5" />
+              Create your first project
+            </Link>
+          </Button>
         </div>
       ) : null}
     </div>

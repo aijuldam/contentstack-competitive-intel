@@ -14,6 +14,8 @@ import {
 } from "@/lib/schemas/foundation.schema";
 import { foundationConfidenceCounts } from "@/lib/schemas/foundation.map";
 import { ApproveFoundationButton } from "./ApproveFoundationButton";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
+import { E } from "@/lib/analytics/events";
 import type { GroundedBlock } from "@/lib/schemas/provenance";
 
 export const metadata: Metadata = { title: "Canonical narrative" };
@@ -59,6 +61,10 @@ export default async function NarrativePage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 space-y-8">
+      <PageViewTracker
+        event={E.MESSAGING_FOUNDATION_REVIEWED}
+        properties={{ project_id: id, foundation_version: version.version_number }}
+      />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

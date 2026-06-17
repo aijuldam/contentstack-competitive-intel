@@ -5,7 +5,7 @@ import { getPlanForWorkspace } from "@/lib/billing/plans";
 
 // Server Component — validates auth and workspace before rendering the shell.
 // Unauthenticated → redirects to /login (via requireAuth)
-// No workspace → redirects to /app/onboarding (via requireAuthAndWorkspace)
+// No workspace → redirects to /onboarding (via requireAuthAndWorkspace)
 export default async function AppLayout({
   children,
 }: {

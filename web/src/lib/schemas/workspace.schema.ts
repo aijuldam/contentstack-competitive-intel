@@ -9,7 +9,7 @@ export const WorkspaceCreateSchema = z.object({
 
 export const WorkspaceUpdateSchema = z.object({
   name: z.string().min(1).max(80).optional(),
-  plan: z.enum(["free", "pro", "team"]).optional(),
+  plan: z.enum(["free", "paid_monthly", "pro", "team"]).optional(),
 });
 
 export const WorkspaceMemberRoleSchema = z.enum(["owner", "admin", "member"]);

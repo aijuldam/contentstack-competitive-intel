@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { EmptyState } from "@/components/shared/EmptyState";
 import { requireAuthAndWorkspace } from "@/lib/auth/helpers";
 import { createClient } from "@/lib/db/server";
 import { getProjectsByWorkspace } from "@/lib/db/queries/projects";
 import { formatDistanceToNow } from "@/lib/utils/date";
+import { canCreateProject } from "@/lib/billing/entitlements";
+import { UpgradePrompt } from "@/components/billing/UpgradePrompt";
 import type { Project } from "@/lib/db/types";
 
 export const metadata: Metadata = { title: "Projects" };
@@ -27,6 +28,7 @@ export default async function ProjectsPage() {
   const { workspace } = await requireAuthAndWorkspace();
   const supabase = await createClient();
   const projects = await getProjectsByWorkspace(supabase, workspace.id);
+  const canCreate = canCreateProject(workspace);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
@@ -34,24 +36,41 @@ export default async function ProjectsPage() {
         title="Projects"
         description="Each project holds a canonical narrative and all derived assets."
         actions={
-          <Button size="sm" asChild>
-            <Link href="/app/projects/new">
-              <Plus className="h-3.5 w-3.5" />
-              New project
-            </Link>
-          </Button>
+          canCreate ? (
+            <Button size="sm" asChild>
+              <Link href="/app/projects/new">
+                <Plus className="h-3.5 w-3.5" />
+                New project
+              </Link>
+            </Button>
+          ) : null
         }
         className="mb-6"
       />
 
-      {projects.length === 0 ? (
-        <EmptyState
-          icon={FolderOpen}
-          title="No projects yet"
-          description="Create your first project to generate a canonical narrative and all your assets."
-          action={{ label: "Create your first project", href: "/app/projects/new" }}
+      {!canCreate && (
+        <UpgradePrompt
+          feature="Create a project to generate GTM assets"
+          benefit="The full workflow — intake, Messaging Foundation, pitch deck, one-pager, and sales deck — is available on the Go-to-Market Taste plan at €5/month."
+          className="mb-6"
         />
-      ) : (
+      )}
+
+      {canCreate && projects.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center">
+          <FolderOpen className="mx-auto mb-3 h-8 w-8 text-muted-foreground/40" />
+          <p className="mb-1 text-sm font-medium">No projects yet</p>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Create your first project to generate a canonical narrative and all your assets.
+          </p>
+          <Button size="sm" asChild>
+            <Link href="/app/projects/new">
+              <Plus className="h-3.5 w-3.5" />
+              Create your first project
+            </Link>
+          </Button>
+        </div>
+      ) : canCreate && projects.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {projects.map((project) => {
             const status = statusConfig[project.status];
@@ -79,7 +98,7 @@ export default async function ProjectsPage() {
             );
           })}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

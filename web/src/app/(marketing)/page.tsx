@@ -117,38 +117,34 @@ const differentiators = [
 
 const plans = [
   {
-    name: "Starter",
+    name: "Free",
     price: "Free",
-    description: "For founders and solo PMMs getting started.",
-    features: ["3 projects", "Core narrative generation", "All 3 asset types", "Inline editing"],
-    cta: "Start free",
+    description: "Get the frameworks, templates, and examples to sharpen your message.",
+    features: [
+      "MEDDIC framework guide",
+      "Command of the Message guide",
+      "Messaging templates and examples",
+      "Example GTM asset outputs",
+    ],
+    cta: "Get free resources",
     href: "/signup",
     highlighted: false,
   },
   {
-    name: "Pro",
-    price: "$49",
+    name: "Go-to-Market Taste",
+    price: "€5",
     per: "/month",
-    description: "For PMMs, AEs, and consultants who ship regularly.",
+    description: "Turn your company positioning into ready-to-use GTM assets aligning your entire company to drive growth.",
     features: [
+      "Everything in Free",
       "Unlimited projects",
-      "Everything in Starter",
-      "PDF export",
-      "Narrative versioning",
-      "Priority generation",
+      "Generate your Messaging Foundation",
+      "Generate pitch deck, one-pager, and sales deck",
+      "Versioned workspace",
     ],
-    cta: "Start free trial",
-    href: "/signup?plan=pro",
+    cta: "Start for €5/month",
+    href: "/signup?plan=paid_monthly",
     highlighted: true,
-  },
-  {
-    name: "Team",
-    price: "Custom",
-    description: "For revenue teams and agencies with shared workspaces.",
-    features: ["Everything in Pro", "Team workspaces", "Shared projects", "SSO", "Dedicated support"],
-    cta: "Contact us",
-    href: "mailto:hello@gotomarkettaste.com",
-    highlighted: false,
   },
 ];
 
@@ -215,7 +211,7 @@ export default function HomePage() {
                 </Button>
               </div>
               <p className="mt-4 text-xs text-muted-foreground">
-                Free to start. No credit card required.
+                Free plan available. Full workflow from €5/month.
               </p>
             </div>
 
@@ -488,10 +484,13 @@ export default function HomePage() {
           <div className="mb-12 text-center">
             <p className="label-xs mb-2">Pricing</p>
             <h2 className="text-2xl font-semibold tracking-tight">
-              Start free. Scale when you need to.
+              Start free. Upgrade to execute.
             </h2>
+            <p className="mt-3 mx-auto max-w-xl text-sm text-muted-foreground">
+              Free gives you the frameworks and examples. €5/month unlocks the full workflow.
+            </p>
           </div>
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 md:max-w-2xl md:mx-auto">
             {plans.map((plan) => (
               <div
                 key={plan.name}

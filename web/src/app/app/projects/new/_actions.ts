@@ -6,9 +6,16 @@ import { createServiceClient } from "@/lib/db/server";
 import { createProject } from "@/lib/db/queries/projects";
 import { createProjectSource } from "@/lib/db/queries/sources";
 import { RawIntakeSchema } from "@/lib/schemas/intake.schema";
+import { canCreateProject } from "@/lib/billing/entitlements";
+import { emitBillingEvent } from "@/lib/billing/events";
 
 export async function createProjectAction(formData: FormData) {
   const { user, workspace } = await requireAuthAndWorkspace();
+
+  if (!canCreateProject(workspace)) {
+    emitBillingEvent({ event: "paywall_viewed", feature: "create_project", planKey: workspace.plan });
+    redirect("/app/billing?gate=create_project");
+  }
 
   const projectName = ((formData.get("project_name") as string | null) ?? "").trim() || "New Project";
 

@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
-import { signIn, signInWithGoogle, type AuthState } from "@/lib/auth/actions";
+import { signIn, type AuthState } from "@/lib/auth/actions";
+import { isWorkEmail } from "@/lib/utils/email";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,16 @@ function SubmitButton() {
 
 export function LoginForm() {
   const [state, formAction] = useFormState(signIn, initialState);
+  const [emailDomainError, setEmailDomainError] = useState<string | null>(null);
+
+  function handleEmailBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    if (val && !isWorkEmail(val)) {
+      setEmailDomainError("Please use your work email address.");
+    } else {
+      setEmailDomainError(null);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -31,17 +43,20 @@ export function LoginForm() {
         )}
 
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">Work email</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="you@company.com"
+            placeholder="you@yourcompany.com"
             autoComplete="email"
+            onBlur={handleEmailBlur}
             required
           />
-          {state.fieldErrors?.email && (
-            <p className="text-xs text-destructive">{state.fieldErrors.email[0]}</p>
+          {(emailDomainError ?? state.fieldErrors?.email?.[0]) && (
+            <p className="text-xs text-destructive">
+              {emailDomainError ?? state.fieldErrors?.email?.[0]}
+            </p>
           )}
         </div>
 
@@ -67,25 +82,10 @@ export function LoginForm() {
         <SubmitButton />
       </form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">or</span>
-        </div>
-      </div>
-
-      <form action={signInWithGoogle}>
-        <Button variant="outline" className="w-full" type="submit">
-          Continue with Google
-        </Button>
-      </form>
-
       <p className="text-center text-sm text-muted-foreground">
         No account?{" "}
         <Link href="/signup" className="text-primary hover:underline">
-          Sign up free
+          Create one free
         </Link>
       </p>
     </div>

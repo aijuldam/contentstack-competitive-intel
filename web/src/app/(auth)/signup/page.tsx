@@ -12,7 +12,9 @@ export default function SignupPage() {
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>Free to start. No credit card required.</CardDescription>
+          <CardDescription>
+            Turn your product story into aligned sales messaging.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <SignupForm />

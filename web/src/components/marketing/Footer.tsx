@@ -29,8 +29,8 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-1">
             <Logo size="sm" />
             <p className="mt-3 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              Structured sales messaging for B2B SaaS teams. One intake, one
-              source of truth, every asset aligned.
+              MEDDIC-aligned messaging, pitch decks, and sales assets — from
+              a single 10-minute intake.
             </p>
           </div>
           {Object.entries(footerLinks).map(([group, links]) => (
@@ -55,7 +55,7 @@ export function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} NarrativeKit. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Product Marketing Taste. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Terms</Link>

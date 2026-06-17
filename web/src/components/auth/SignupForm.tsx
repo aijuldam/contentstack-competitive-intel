@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
-import { signUp, signInWithGoogle, type AuthState } from "@/lib/auth/actions";
+import { signUp, type AuthState } from "@/lib/auth/actions";
+import { isWorkEmail } from "@/lib/utils/email";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,27 @@ function SubmitButton() {
 
 export function SignupForm() {
   const [state, formAction] = useFormState(signUp, initialState);
+  const [emailDomainError, setEmailDomainError] = useState<string | null>(null);
+
+  function handleEmailBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    if (val && !isWorkEmail(val)) {
+      setEmailDomainError("Please use your work email address.");
+    } else {
+      setEmailDomainError(null);
+    }
+  }
+
+  if (state.success) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xl">
+          ✓
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">{state.success}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -30,19 +53,37 @@ export function SignupForm() {
           </div>
         )}
 
-        <div className="space-y-1.5">
-          <Label htmlFor="name">Full name</Label>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="Alex Chen"
-            autoComplete="name"
-            required
-          />
-          {state.fieldErrors?.name && (
-            <p className="text-xs text-destructive">{state.fieldErrors.name[0]}</p>
-          )}
+        {/* First + Last name — side by side */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="first_name">First name</Label>
+            <Input
+              id="first_name"
+              name="first_name"
+              type="text"
+              placeholder="Alex"
+              autoComplete="given-name"
+              required
+            />
+            {state.fieldErrors?.first_name && (
+              <p className="text-xs text-destructive">{state.fieldErrors.first_name[0]}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="last_name">Last name</Label>
+            <Input
+              id="last_name"
+              name="last_name"
+              type="text"
+              placeholder="Chen"
+              autoComplete="family-name"
+              required
+            />
+            {state.fieldErrors?.last_name && (
+              <p className="text-xs text-destructive">{state.fieldErrors.last_name[0]}</p>
+            )}
+          </div>
         </div>
 
         <div className="space-y-1.5">
@@ -51,12 +92,30 @@ export function SignupForm() {
             id="email"
             name="email"
             type="email"
-            placeholder="you@company.com"
-            autoComplete="email"
+            placeholder="you@yourcompany.com"
+            autoComplete="work email"
+            onBlur={handleEmailBlur}
             required
           />
-          {state.fieldErrors?.email && (
-            <p className="text-xs text-destructive">{state.fieldErrors.email[0]}</p>
+          {(emailDomainError ?? state.fieldErrors?.email?.[0]) && (
+            <p className="text-xs text-destructive">
+              {emailDomainError ?? state.fieldErrors?.email?.[0]}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="company_name">Company name</Label>
+          <Input
+            id="company_name"
+            name="company_name"
+            type="text"
+            placeholder="Acme Inc."
+            autoComplete="organization"
+            required
+          />
+          {state.fieldErrors?.company_name && (
+            <p className="text-xs text-destructive">{state.fieldErrors.company_name[0]}</p>
           )}
         </div>
 
@@ -75,22 +134,22 @@ export function SignupForm() {
           )}
         </div>
 
+        <div className="space-y-1.5">
+          <Label htmlFor="confirm_password">Confirm password</Label>
+          <Input
+            id="confirm_password"
+            name="confirm_password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Repeat your password"
+            required
+          />
+          {state.fieldErrors?.confirm_password && (
+            <p className="text-xs text-destructive">{state.fieldErrors.confirm_password[0]}</p>
+          )}
+        </div>
+
         <SubmitButton />
-      </form>
-
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">or</span>
-        </div>
-      </div>
-
-      <form action={signInWithGoogle}>
-        <Button variant="outline" className="w-full" type="submit">
-          Continue with Google
-        </Button>
       </form>
 
       <p className="text-center text-xs text-muted-foreground">
@@ -102,9 +161,7 @@ export function SignupForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-primary hover:underline">
-          Sign in
-        </Link>
+        <Link href="/login" className="text-primary hover:underline">Sign in</Link>
       </p>
     </div>
   );

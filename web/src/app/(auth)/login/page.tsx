@@ -11,8 +11,8 @@ export default function LoginPage() {
     <div className="w-full max-w-sm animate-fade-in">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle>Sign in to NarrativeKit</CardTitle>
-          <CardDescription>Enter your email to continue.</CardDescription>
+          <CardTitle>Welcome back</CardTitle>
+          <CardDescription>Sign in to your Product Marketing Taste account.</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

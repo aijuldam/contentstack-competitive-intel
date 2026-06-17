@@ -1,24 +1,38 @@
 "use server";
 
 import { createClient, createServiceClient } from "@/lib/db/server";
-import {
-  createWorkspaceWithOwner,
-  generateUniqueSlug,
-} from "@/lib/db/queries/workspaces";
+import { createWorkspaceWithOwner, generateUniqueSlug } from "@/lib/db/queries/workspaces";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { isWorkEmail } from "@/lib/utils/email";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared validators
+// ─────────────────────────────────────────────────────────────────────────────
+const workEmailField = z
+  .string()
+  .email("Invalid email address")
+  .refine(isWorkEmail, "Please use your work email address.");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Input schemas
 // ─────────────────────────────────────────────────────────────────────────────
-const SignUpSchema = z.object({
-  name:     z.string().min(1, "Name is required").max(100),
-  email:    z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
+const SignUpSchema = z
+  .object({
+    first_name:       z.string().min(1, "First name is required").max(50),
+    last_name:        z.string().min(1, "Last name is required").max(50),
+    email:            workEmailField,
+    company_name:     z.string().min(1, "Company name is required").max(100),
+    password:         z.string().min(8, "Password must be at least 8 characters"),
+    confirm_password: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((d) => d.password === d.confirm_password, {
+    message: "Passwords do not match.",
+    path: ["confirm_password"],
+  });
 
 const SignInSchema = z.object({
-  email:    z.string().email("Invalid email address"),
+  email:    workEmailField,
   password: z.string().min(1, "Password is required"),
 });
 
@@ -32,19 +46,25 @@ const WorkspaceSchema = z.object({
 export interface AuthState {
   error?: string;
   fieldErrors?: Record<string, string[]>;
+  success?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // signUp
+// Creates the auth user, profile, and workspace in one shot so the user lands
+// directly in the app without a separate onboarding step.
 // ─────────────────────────────────────────────────────────────────────────────
 export async function signUp(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
   const raw = {
-    name:     formData.get("name"),
-    email:    formData.get("email"),
-    password: formData.get("password"),
+    first_name:       formData.get("first_name"),
+    last_name:        formData.get("last_name"),
+    email:            formData.get("email"),
+    company_name:     formData.get("company_name"),
+    password:         formData.get("password"),
+    confirm_password: formData.get("confirm_password"),
   };
 
   const parsed = SignUpSchema.safeParse(raw);
@@ -52,25 +72,60 @@ export async function signUp(
     return { fieldErrors: parsed.error.flatten().fieldErrors };
   }
 
-  const { name, email, password } = parsed.data;
+  const { first_name, last_name, email, company_name, password } = parsed.data;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: name },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/onboarding`,
+      data: {
+        first_name,
+        last_name,
+        company:   company_name,
+        full_name: `${first_name} ${last_name}`,
+      },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/app/projects`,
     },
   });
 
-  if (error) {
-    return { error: error.message };
+  if (authError) {
+    return { error: authError.message };
   }
 
-  // If Supabase email confirmation is OFF, the user is immediately signed in.
-  // Redirect to onboarding to create their first workspace.
-  redirect("/onboarding");
+  const user = authData.user;
+  if (!user) {
+    return { error: "Signup failed. Please try again." };
+  }
+
+  // Use service-role client for profile + workspace — user has no RLS access yet.
+  const service = await createServiceClient();
+
+  try {
+    const { error: profileError } = await service
+      .from("profiles")
+      .insert({ id: user.id, first_name, last_name, company: company_name });
+    if (profileError) throw profileError;
+
+    const slug = await generateUniqueSlug(service, company_name);
+    await createWorkspaceWithOwner(service, {
+      name:    company_name,
+      slug,
+      ownerId: user.id,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Account created but setup failed. Please contact support.";
+    return { error: message };
+  }
+
+  // Email confirmation is required — no session yet.
+  if (!authData.session) {
+    return {
+      success: `We sent a confirmation link to ${email}. Check your inbox and click the link to activate your account.`,
+    };
+  }
+
+  redirect("/app/projects");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -110,9 +165,7 @@ export async function signOut(): Promise<void> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// createWorkspace  (called from onboarding)
-// Uses the service-role client to bypass RLS — the user has no membership yet,
-// so the regular client can't INSERT into workspaces.
+// createWorkspace — fallback for users without a workspace (edge cases)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function createWorkspace(
   _prevState: AuthState,
@@ -125,7 +178,6 @@ export async function createWorkspace(
     return { fieldErrors: parsed.error.flatten().fieldErrors };
   }
 
-  // Verify the session via the regular (anon) client first
   const supabase = await createClient();
   const {
     data: { user },
@@ -133,7 +185,6 @@ export async function createWorkspace(
 
   if (!user) redirect("/login");
 
-  // Use service client for the actual inserts (bypasses RLS)
   const service = await createServiceClient();
   const slug = await generateUniqueSlug(service, parsed.data.name);
 
@@ -149,21 +200,4 @@ export async function createWorkspace(
   }
 
   redirect("/app/projects");
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// signInWithGoogle  (OAuth — redirects, no FormData)
-// ─────────────────────────────────────────────────────────────────────────────
-export async function signInWithGoogle(): Promise<never> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/onboarding`,
-    },
-  });
-
-  if (error) throw error;
-  redirect(data.url);
 }

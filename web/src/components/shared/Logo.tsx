@@ -24,11 +24,11 @@ export function Logo({ className, size = "md", variant = "full" }: LogoProps) {
         )}
         aria-hidden="true"
       >
-        <span className="text-[10px] font-black tracking-tight">NK</span>
+        <span className="text-[9px] font-black tracking-tight">PMT</span>
       </div>
       {variant === "full" && (
         <span className={cn("font-semibold tracking-tight text-foreground", s.text)}>
-          NarrativeKit
+          Product Marketing Taste
         </span>
       )}
     </div>

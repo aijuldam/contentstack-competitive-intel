@@ -1,4 +1,4 @@
-// Hand-written DB types matching 001_init.sql.
+// Hand-written DB types matching 001_init.sql + 002_profiles.sql.
 // In production, replace with: supabase gen types typescript --project-id <id>
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -20,6 +20,15 @@ export type ActivationEventType =
 // ─────────────────────────────────────────────────────────────────────────────
 // Row types (SELECT results)
 // ─────────────────────────────────────────────────────────────────────────────
+export interface Profile {
+  id:         string;
+  first_name: string;
+  last_name:  string;
+  company:    string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Workspace {
   id:         string;
   name:       string;
@@ -144,6 +153,13 @@ export interface ActivationEvent {
 // ─────────────────────────────────────────────────────────────────────────────
 // Insert types — nullable and DB-defaulted fields are optional
 // ─────────────────────────────────────────────────────────────────────────────
+export interface ProfileInsert {
+  id:         string;
+  first_name: string;
+  last_name:  string;
+  company:    string;
+}
+
 export interface WorkspaceInsert {
   name:      string;
   slug:      string;
@@ -299,6 +315,7 @@ type TD<R, I, U = I> = {
 export interface Database {
   public: {
     Tables: {
+      profiles:            TD<Profile,             ProfileInsert,            Partial<ProfileInsert>>;
       workspaces:          TD<Workspace,          WorkspaceInsert,          Partial<WorkspaceInsert>>;
       workspace_members:   TD<WorkspaceMember,    WorkspaceMemberInsert,     Partial<WorkspaceMemberInsert>>;
       projects:            TD<Project,            ProjectInsert,             Partial<ProjectInsert>>;

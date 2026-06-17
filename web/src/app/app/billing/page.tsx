@@ -13,6 +13,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { requireAuthAndWorkspace } from "@/lib/auth/helpers";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
+import { TrackedCta } from "@/components/analytics/TrackedCta";
+import { E } from "@/lib/analytics/events";
 import { getPlanForWorkspace, PLANS } from "@/lib/billing/plans";
 import { hasPlan } from "@/lib/billing/entitlements";
 
@@ -27,6 +30,7 @@ export default async function BillingPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-8 space-y-6">
+      <PageViewTracker event={E.BILLING_PAGE_VIEWED} properties={{ plan: plan.key }} />
       <PageHeader title="Billing" description="Manage your plan and subscription." />
 
       {/* Current plan */}
@@ -122,11 +126,14 @@ export default async function BillingPage() {
                 <Sparkles className="h-3.5 w-3.5" />
                 Start for €5/month
               </Button>
-              <Button variant="outline" className="w-full sm:w-auto" asChild>
-                <Link href="/pricing">
-                  Compare plans
-                </Link>
-              </Button>
+              <TrackedCta
+                label="Compare plans"
+                href="/pricing"
+                event={E.UPGRADE_CLICKED}
+                properties={{ pricing_cta: "Compare plans", location: "billing_page", plan: plan.key }}
+                variant="outline"
+                className="w-full sm:w-auto"
+              />
             </div>
             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
               <CreditCard className="h-3.5 w-3.5 shrink-0" />

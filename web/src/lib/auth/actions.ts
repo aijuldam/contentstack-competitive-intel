@@ -5,6 +5,8 @@ import { createWorkspaceWithOwner, generateUniqueSlug } from "@/lib/db/queries/w
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { isWorkEmail } from "@/lib/utils/email";
+import { track } from "@/lib/analytics/server";
+import { E } from "@/lib/analytics/events";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared validators
@@ -118,6 +120,10 @@ export async function signUp(
     return { error: message };
   }
 
+  // Track signup_completed — fires whether email confirmation is required or not.
+  // Note: identify() is called client-side after login via AnalyticsIdentity.
+  track(E.SIGNUP_COMPLETED, { plan: "free", company_name }, user.id);
+
   // Email confirmation is required — no session yet.
   if (!authData.session) {
     return {
@@ -146,10 +152,14 @@ export async function signIn(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
     return { error: "Invalid email or password." };
+  }
+
+  if (data.user) {
+    track(E.LOGIN_COMPLETED, {}, data.user.id);
   }
 
   redirect("/app/projects");
@@ -198,6 +208,8 @@ export async function createWorkspace(
     const message = err instanceof Error ? err.message : "Failed to create workspace.";
     return { error: message };
   }
+
+  track(E.ONBOARDING_COMPLETED, { company_name: parsed.data.name }, user.id);
 
   redirect("/app/projects");
 }

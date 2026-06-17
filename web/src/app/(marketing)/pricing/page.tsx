@@ -5,6 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { PLANS } from "@/lib/billing/plans";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
+import { TrackedCta } from "@/components/analytics/TrackedCta";
+import { E } from "@/lib/analytics/events";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -71,14 +74,16 @@ export default function PricingPage() {
         </p>
       </div>
 
+      <PageViewTracker event={E.PRICING_PAGE_VIEWED} properties={{ source_page: "pricing" }} />
+
       {/* Repeated CTA above fold */}
       <div className="mb-12 flex justify-center">
-        <Button asChild>
-          <Link href="/signup?plan=paid_monthly">
-            Start for €5/month
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
+        <TrackedCta
+          label="Start for €5/month"
+          href="/signup?plan=paid_monthly"
+          event={E.PAID_CTA_CLICKED}
+          properties={{ pricing_cta: "Start for €5/month", location: "pricing_page_top" }}
+        />
       </div>
 
       {/* Plan cards */}
@@ -108,9 +113,14 @@ export default function PricingPage() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" variant="outline" asChild>
-              <Link href={FREE.ctaHref}>{FREE.ctaLabel}</Link>
-            </Button>
+            <TrackedCta
+              label={FREE.ctaLabel}
+              href={FREE.ctaHref}
+              event={E.FREE_RESOURCES_CLICKED}
+              properties={{ pricing_cta: FREE.ctaLabel, location: "pricing_page_card" }}
+              variant="outline"
+              className="w-full"
+            />
           </CardFooter>
         </Card>
 
@@ -140,9 +150,13 @@ export default function PricingPage() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" asChild>
-              <Link href={PAID.ctaHref}>{PAID.ctaLabel}</Link>
-            </Button>
+            <TrackedCta
+              label={PAID.ctaLabel}
+              href={PAID.ctaHref}
+              event={E.PAID_CTA_CLICKED}
+              properties={{ pricing_cta: PAID.ctaLabel, location: "pricing_page_card" }}
+              className="w-full"
+            />
           </CardFooter>
         </Card>
 
@@ -195,12 +209,19 @@ export default function PricingPage() {
           Upgrade to generate your Messaging Foundation and GTM assets.
         </p>
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
-          <Button asChild>
-            <Link href="/signup?plan=paid_monthly">Start for €5/month</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/signup">Get free resources</Link>
-          </Button>
+          <TrackedCta
+            label="Start for €5/month"
+            href="/signup?plan=paid_monthly"
+            event={E.PAID_CTA_CLICKED}
+            properties={{ pricing_cta: "Start for €5/month", location: "pricing_page_bottom" }}
+          />
+          <TrackedCta
+            label="Get free resources"
+            href="/signup"
+            event={E.FREE_RESOURCES_CLICKED}
+            properties={{ pricing_cta: "Get free resources", location: "pricing_page_bottom" }}
+            variant="outline"
+          />
         </div>
       </div>
 

@@ -1,9 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Billing instrumentation hooks
 //
-// Emit structured events for analytics on key billing lifecycle moments.
-// Currently logs to console in dev. Wire to PostHog / Segment / etc. in prod.
+// Bridges billing lifecycle events to the unified analytics layer.
 // ─────────────────────────────────────────────────────────────────────────────
+
+import { track } from "@/lib/analytics/server";
 
 export type BillingEventType =
   | "pricing_page_viewed"
@@ -17,14 +18,21 @@ export type BillingEventType =
 export interface BillingEventPayload {
   event: BillingEventType;
   planKey?: string;
-  source?: string;       // which page or component triggered it
-  feature?: string;      // which gated feature was blocked
+  source?: string;
+  feature?: string;
   metadata?: Record<string, unknown>;
 }
 
-export function emitBillingEvent(payload: BillingEventPayload): void {
-  if (process.env.NODE_ENV === "development") {
-    console.log("[billing:event]", payload);
-  }
-  // TODO: analytics.track(payload.event, { ...payload })
+export function emitBillingEvent(payload: BillingEventPayload, userId?: string): void {
+  const { event, planKey, source, feature, metadata } = payload;
+  track(
+    event,
+    {
+      plan: planKey,
+      source_page: source,
+      paywall_context: feature,
+      ...(metadata as Record<string, string | number | boolean | null | undefined>),
+    },
+    userId
+  );
 }

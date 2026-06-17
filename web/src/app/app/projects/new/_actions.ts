@@ -8,6 +8,8 @@ import { createProjectSource } from "@/lib/db/queries/sources";
 import { RawIntakeSchema } from "@/lib/schemas/intake.schema";
 import { canCreateProject } from "@/lib/billing/entitlements";
 import { emitBillingEvent } from "@/lib/billing/events";
+import { track } from "@/lib/analytics/server";
+import { E } from "@/lib/analytics/events";
 
 export async function createProjectAction(formData: FormData) {
   const { user, workspace } = await requireAuthAndWorkspace();
@@ -44,6 +46,12 @@ export async function createProjectAction(formData: FormData) {
     raw_input: parse.data,
     normalization_status: "pending",
   });
+
+  track(
+    E.PROJECT_CREATED,
+    { project_id: project.id, plan: workspace.plan, workspace_id: workspace.id },
+    user.id
+  );
 
   redirect(`/app/projects/${project.id}/inputs`);
 }

@@ -29,3 +29,4 @@ Thumbs.db
 web/.next/
 web/out/
 web/node_modules/
+web/tsconfig.tsbuildinfo

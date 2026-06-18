@@ -5,6 +5,9 @@ import { NewProjectForm } from "./NewProjectForm";
 import { requireAuthAndWorkspace } from "@/lib/auth/helpers";
 import { canCreateProject } from "@/lib/billing/entitlements";
 import { UpgradePrompt } from "@/components/billing/UpgradePrompt";
+import { isEnabled } from "@/lib/experiments";
+import { getSampleIntakeContent } from "@/lib/experiments/sample-intake";
+import { WorkflowProgressSteps } from "@/components/experiments/WorkflowProgressSteps";
 
 export const metadata: Metadata = {
   title: "New project",
@@ -12,6 +15,9 @@ export const metadata: Metadata = {
 
 export default async function NewProjectPage() {
   const { workspace } = await requireAuthAndWorkspace();
+
+  // EXP-002: sample intake prefill — resolved server-side so Client Form stays clean
+  const sampleContent = getSampleIntakeContent(isEnabled("INTAKE_SAMPLE_PREFILL"));
 
   if (!canCreateProject(workspace)) {
     return (
@@ -34,8 +40,18 @@ export default async function NewProjectPage() {
       <PageHeader
         title="New project"
         description="Fill in four fields. The AI will structure the rest."
-        className="mb-6"
+        className="mb-4"
       />
+
+      {/* EXP-001: workflow progress indicator */}
+      {isEnabled("INTAKE_PROGRESS_STEPS") && (
+        <div className="mb-5 rounded-lg border border-border bg-muted/20 px-4 py-3">
+          <p className="mb-2.5 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
+            How it works
+          </p>
+          <WorkflowProgressSteps currentStep="intake" />
+        </div>
+      )}
 
       <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
         <Badge variant="inferred" className="shrink-0">Note</Badge>
@@ -45,7 +61,7 @@ export default async function NewProjectPage() {
         </p>
       </div>
 
-      <NewProjectForm />
+      <NewProjectForm sampleContent={sampleContent} />
     </div>
   );
 }

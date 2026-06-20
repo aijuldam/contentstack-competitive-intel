@@ -1,15 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Stripe Checkout — stub
-//
-// Wire up by installing `stripe` and setting env vars:
-//   STRIPE_SECRET_KEY
-//   STRIPE_PAID_MONTHLY_PRICE_ID
-// ─────────────────────────────────────────────────────────────────────────────
+import Stripe from "stripe";
 
 export interface CheckoutSessionParams {
   workspaceId: string;
   userId: string;
   email: string;
+  stripeCustomerId?: string | null;
   successUrl: string;
   cancelUrl: string;
 }
@@ -19,28 +14,38 @@ export interface CheckoutSessionResult {
   sessionId: string;
 }
 
-export async function createCheckoutSession(
-  _params: CheckoutSessionParams
-): Promise<CheckoutSessionResult> {
-  throw new Error(
-    "Stripe Checkout is not yet enabled. " +
-      "Set STRIPE_SECRET_KEY and STRIPE_PAID_MONTHLY_PRICE_ID to activate."
-  );
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
+  // apiVersion omitted — SDK default (2026-05-27.dahlia) is used
+  return new Stripe(key);
+}
 
-  /*
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
-  const session = await stripe.checkout.sessions.create({
+export async function createCheckoutSession(
+  params: CheckoutSessionParams
+): Promise<CheckoutSessionResult> {
+  const stripe = getStripe();
+
+  const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode: "subscription",
     payment_method_types: ["card"],
-    customer_email: _params.email,
     line_items: [{ price: process.env.STRIPE_PAID_MONTHLY_PRICE_ID!, quantity: 1 }],
-    success_url: _params.successUrl + "?checkout=success",
-    cancel_url: _params.cancelUrl,
+    success_url: params.successUrl + "?checkout=success",
+    cancel_url: params.cancelUrl,
+    client_reference_id: params.workspaceId,
     metadata: {
-      workspace_id: _params.workspaceId,
-      user_id: _params.userId,
+      workspace_id: params.workspaceId,
+      user_id: params.userId,
     },
-  });
+  };
+
+  // Reuse existing Stripe customer to avoid duplicate customer records
+  if (params.stripeCustomerId) {
+    sessionParams.customer = params.stripeCustomerId;
+  } else {
+    sessionParams.customer_email = params.email;
+  }
+
+  const session = await stripe.checkout.sessions.create(sessionParams);
   return { url: session.url!, sessionId: session.id };
-  */
 }

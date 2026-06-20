@@ -1,28 +1,23 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Stripe Customer Portal — stub
-//
-// Lets paid customers manage their subscription (cancel, update payment, etc.)
-// Requires: STRIPE_SECRET_KEY + a configured Stripe billing portal.
-// ─────────────────────────────────────────────────────────────────────────────
+import Stripe from "stripe";
 
 export interface PortalSessionParams {
   stripeCustomerId: string;
   returnUrl: string;
 }
 
-export async function createPortalSession(
-  _params: PortalSessionParams
-): Promise<{ url: string }> {
-  throw new Error(
-    "Stripe customer portal is not yet enabled. Set STRIPE_SECRET_KEY to activate."
-  );
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
+  return new Stripe(key);
+}
 
-  /*
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+export async function createPortalSession(
+  params: PortalSessionParams
+): Promise<{ url: string }> {
+  const stripe = getStripe();
   const session = await stripe.billingPortal.sessions.create({
-    customer: _params.stripeCustomerId,
-    return_url: _params.returnUrl,
+    customer: params.stripeCustomerId,
+    return_url: params.returnUrl,
   });
   return { url: session.url };
-  */
 }

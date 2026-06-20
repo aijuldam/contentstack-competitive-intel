@@ -392,6 +392,7 @@ export interface Database {
       generation_runs:     TD<GenerationRun,      GenerationRunInsert,      Partial<GenerationRunInsert>>;
       export_jobs:         TD<ExportJob,          ExportJobInsert,          Partial<ExportJobInsert>>;
       activation_events:   TD<ActivationEvent,    ActivationEventInsert,    never>;
+      workspace_billing:   TD<WorkspaceBilling,   WorkspaceBillingInsert,   Partial<WorkspaceBillingInsert>>;
     };
     Views:     Record<string, never>;
     Functions: Record<string, never>;

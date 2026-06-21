@@ -16,6 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://gtmtaste.com"),
   title: {
     default: "Go-to-Market Taste: Structured sales messaging for B2B SaaS",
     template: "%s | Go-to-Market Taste",
@@ -27,6 +28,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "Go-to-Market Taste",
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 

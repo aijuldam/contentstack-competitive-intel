@@ -83,7 +83,7 @@ export async function signUp(
         company:   company_name,
         full_name: `${first_name} ${last_name}`,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/app/projects`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
     },
   });
 

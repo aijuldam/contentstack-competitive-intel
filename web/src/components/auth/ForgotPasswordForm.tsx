@@ -2,7 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
-import { signIn, type AuthState } from "@/lib/auth/actions";
+import { sendPasswordReset, type AuthState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,13 +13,27 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" className="w-full" loading={pending}>
-      Sign in
+      Send reset link
     </Button>
   );
 }
 
-export function LoginForm() {
-  const [state, formAction] = useFormState(signIn, initialState);
+export function ForgotPasswordForm() {
+  const [state, formAction] = useFormState(sendPasswordReset, initialState);
+
+  if (state.success) {
+    return (
+      <div className="space-y-4 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-xl">
+          ✓
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">{state.success}</p>
+        <p className="text-center text-sm text-muted-foreground">
+          <Link href="/login" className="text-primary hover:underline">Back to sign in</Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -45,33 +59,11 @@ export function LoginForm() {
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground">
-              Forgot password?
-            </Link>
-          </div>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-          />
-          {state.fieldErrors?.password && (
-            <p className="text-xs text-destructive">{state.fieldErrors.password[0]}</p>
-          )}
-        </div>
-
         <SubmitButton />
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        No account?{" "}
-        <Link href="/signup" className="text-primary hover:underline">
-          Create one free
-        </Link>
+        <Link href="/login" className="text-primary hover:underline">Back to sign in</Link>
       </p>
     </div>
   );

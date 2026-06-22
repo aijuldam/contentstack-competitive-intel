@@ -4,17 +4,13 @@ import { createClient, createServiceClient } from "@/lib/db/server";
 import { createWorkspaceWithOwner, generateUniqueSlug } from "@/lib/db/queries/workspaces";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { isWorkEmail } from "@/lib/utils/email";
 import { track } from "@/lib/analytics/server";
 import { E } from "@/lib/analytics/events";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared validators
 // ─────────────────────────────────────────────────────────────────────────────
-const workEmailField = z
-  .string()
-  .email("Invalid email address")
-  .refine(isWorkEmail, "Please use your work email address.");
+const emailField = z.string().email("Invalid email address");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Input schemas
@@ -23,7 +19,7 @@ const SignUpSchema = z
   .object({
     first_name:       z.string().min(1, "First name is required").max(50),
     last_name:        z.string().min(1, "Last name is required").max(50),
-    email:            workEmailField,
+    email:            emailField,
     company_name:     z.string().min(1, "Company name is required").max(100),
     password:         z.string().min(8, "Password must be at least 8 characters"),
     confirm_password: z.string().min(1, "Please confirm your password"),
@@ -34,7 +30,7 @@ const SignUpSchema = z
   });
 
 const SignInSchema = z.object({
-  email:    workEmailField,
+  email:    emailField,
   password: z.string().min(1, "Password is required"),
 });
 
@@ -172,6 +168,37 @@ export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// sendPasswordReset
+// ─────────────────────────────────────────────────────────────────────────────
+const PasswordResetSchema = z.object({
+  email: emailField,
+});
+
+export async function sendPasswordReset(
+  _prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const raw = { email: formData.get("email") };
+  const parsed = PasswordResetSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { fieldErrors: parsed.error.flatten().fieldErrors };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/reset-password`,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {
+    success: `Password reset link sent to ${parsed.data.email}. Check your inbox.`,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

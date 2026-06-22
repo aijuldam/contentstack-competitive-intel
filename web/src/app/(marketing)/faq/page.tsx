@@ -76,10 +76,6 @@ const faqGroups = [
         a: "Yes. The free plan gives you access to the MEDDIC and Command of the Message framework guides, messaging templates, and example GTM asset outputs. No credit card required. To create projects and generate real assets from your own intake, upgrade to the paid plan at €5/month.",
       },
       {
-        q: "Why do you ask for a work email?",
-        a: "Go-to-Market Taste is a professional tool for revenue teams. Work email keeps accounts tied to the organizations they serve and makes team access and billing cleaner when those features roll out.",
-      },
-      {
         q: "When is billing available?",
         a: "The paid plan is priced at €5/month. Stripe checkout is being activated shortly — the pricing is confirmed and billing will go live soon.",
       },

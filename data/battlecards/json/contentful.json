@@ -1,6 +1,6 @@
 {
-  "id": "1be47f64-79c5-4a3c-af08-627c1a875d16",
-  "competitor_id": "638ca44a-a117-46f4-9dad-6a893af5ab6d",
+  "id": "15cad190-81fa-4844-a956-cf92266d49b2",
+  "competitor_id": "4c4fff09-3f5f-4cb8-ba19-2f5266bf3233",
   "company_profile": {
     "name": "Contentful",
     "website": "https://www.contentful.com",
@@ -45,41 +45,41 @@
   "field_freshness": [
     {
       "field_name": "company_profile",
-      "last_updated": "2026-06-29T07:05:24.191211Z",
-      "last_confirmed": "2026-06-29T07:05:24.191211Z",
+      "last_updated": "2026-07-03T06:09:53.608149Z",
+      "last_confirmed": "2026-07-03T06:09:53.608149Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "positioning",
-      "last_updated": "2026-06-29T07:05:24.191211Z",
-      "last_confirmed": "2026-06-29T07:05:24.191211Z",
+      "last_updated": "2026-07-03T06:09:53.608149Z",
+      "last_confirmed": "2026-07-03T06:09:53.608149Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "analysis",
-      "last_updated": "2026-06-29T07:05:24.191211Z",
-      "last_confirmed": "2026-06-29T07:05:24.191211Z",
+      "last_updated": "2026-07-03T06:09:53.608149Z",
+      "last_confirmed": "2026-07-03T06:09:53.608149Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "feature_launches",
-      "last_updated": "2026-06-29T07:05:24.191211Z",
-      "last_confirmed": "2026-06-29T07:05:24.191211Z",
+      "last_updated": "2026-07-03T06:09:53.608149Z",
+      "last_confirmed": "2026-07-03T06:09:53.608149Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "all_sources",
-      "last_updated": "2026-06-29T07:05:24.191211Z",
-      "last_confirmed": "2026-06-29T07:05:24.191211Z",
+      "last_updated": "2026-07-03T06:09:53.608149Z",
+      "last_confirmed": "2026-07-03T06:09:53.608149Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     }
   ],
-  "created_at": "2026-06-29T07:05:24.191088Z",
-  "updated_at": "2026-06-29T07:05:24.191088Z",
+  "created_at": "2026-07-03T06:09:53.608021Z",
+  "updated_at": "2026-07-03T06:09:53.608021Z",
   "version": 1
 }

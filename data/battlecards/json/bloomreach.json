@@ -1,6 +1,6 @@
 {
-  "id": "2641d7f1-b476-40be-9930-27f4a3318770",
-  "competitor_id": "ffa767ff-ac54-4017-beb8-363a8aaadc9d",
+  "id": "703899ae-abfc-427f-ad12-67eab2ce6b5e",
+  "competitor_id": "9585e566-2582-447f-b2ae-36193f3b52c6",
   "company_profile": {
     "name": "Bloomreach",
     "website": "https://www.bloomreach.com",
@@ -45,41 +45,41 @@
   "field_freshness": [
     {
       "field_name": "company_profile",
-      "last_updated": "2026-08-18T03:11:33.603807Z",
-      "last_confirmed": "2026-08-18T03:11:33.603807Z",
+      "last_updated": "2026-08-23T03:18:09.635295Z",
+      "last_confirmed": "2026-08-23T03:18:09.635295Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "positioning",
-      "last_updated": "2026-08-18T03:11:33.603807Z",
-      "last_confirmed": "2026-08-18T03:11:33.603807Z",
+      "last_updated": "2026-08-23T03:18:09.635295Z",
+      "last_confirmed": "2026-08-23T03:18:09.635295Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "analysis",
-      "last_updated": "2026-08-18T03:11:33.603807Z",
-      "last_confirmed": "2026-08-18T03:11:33.603807Z",
+      "last_updated": "2026-08-23T03:18:09.635295Z",
+      "last_confirmed": "2026-08-23T03:18:09.635295Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "feature_launches",
-      "last_updated": "2026-08-18T03:11:33.603807Z",
-      "last_confirmed": "2026-08-18T03:11:33.603807Z",
+      "last_updated": "2026-08-23T03:18:09.635295Z",
+      "last_confirmed": "2026-08-23T03:18:09.635295Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "all_sources",
-      "last_updated": "2026-08-18T03:11:33.603807Z",
-      "last_confirmed": "2026-08-18T03:11:33.603807Z",
+      "last_updated": "2026-08-23T03:18:09.635295Z",
+      "last_confirmed": "2026-08-23T03:18:09.635295Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     }
   ],
-  "created_at": "2026-08-18T03:11:33.603671Z",
-  "updated_at": "2026-08-18T03:11:33.603671Z",
+  "created_at": "2026-08-23T03:18:09.635176Z",
+  "updated_at": "2026-08-23T03:18:09.635176Z",
   "version": 1
 }

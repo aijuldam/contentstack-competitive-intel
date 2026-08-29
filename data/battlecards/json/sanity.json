@@ -1,6 +1,6 @@
 {
-  "id": "237e2e4c-e815-4a24-85f1-1e3abf082bca",
-  "competitor_id": "56211873-3059-41e0-8c11-fa5290c81328",
+  "id": "41b836fd-3e79-4609-9c0e-715ce3e4e56f",
+  "competitor_id": "25b2292d-4bf0-4a88-b569-7f301ffdd17e",
   "company_profile": {
     "name": "Sanity",
     "website": "https://www.sanity.io",
@@ -45,41 +45,41 @@
   "field_freshness": [
     {
       "field_name": "company_profile",
-      "last_updated": "2026-08-28T14:09:20.588796Z",
-      "last_confirmed": "2026-08-28T14:09:20.588796Z",
+      "last_updated": "2026-08-29T08:58:19.378032Z",
+      "last_confirmed": "2026-08-29T08:58:19.378032Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "positioning",
-      "last_updated": "2026-08-28T14:09:20.588796Z",
-      "last_confirmed": "2026-08-28T14:09:20.588796Z",
+      "last_updated": "2026-08-29T08:58:19.378032Z",
+      "last_confirmed": "2026-08-29T08:58:19.378032Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "analysis",
-      "last_updated": "2026-08-28T14:09:20.588796Z",
-      "last_confirmed": "2026-08-28T14:09:20.588796Z",
+      "last_updated": "2026-08-29T08:58:19.378032Z",
+      "last_confirmed": "2026-08-29T08:58:19.378032Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "feature_launches",
-      "last_updated": "2026-08-28T14:09:20.588796Z",
-      "last_confirmed": "2026-08-28T14:09:20.588796Z",
+      "last_updated": "2026-08-29T08:58:19.378032Z",
+      "last_confirmed": "2026-08-29T08:58:19.378032Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "all_sources",
-      "last_updated": "2026-08-28T14:09:20.588796Z",
-      "last_confirmed": "2026-08-28T14:09:20.588796Z",
+      "last_updated": "2026-08-29T08:58:19.378032Z",
+      "last_confirmed": "2026-08-29T08:58:19.378032Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     }
   ],
-  "created_at": "2026-08-28T14:09:20.588704Z",
-  "updated_at": "2026-08-28T14:09:20.588704Z",
+  "created_at": "2026-08-29T08:58:19.377955Z",
+  "updated_at": "2026-08-29T08:58:19.377955Z",
   "version": 1
 }

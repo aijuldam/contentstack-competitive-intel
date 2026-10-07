@@ -1,6 +1,6 @@
 {
-  "id": "3945237d-25e4-4fb6-978b-a6ebcb6ea575",
-  "competitor_id": "25826b26-2757-4e29-bb10-34d688a9c174",
+  "id": "fa27637f-60ed-495b-9ecf-ecd8be9a38fd",
+  "competitor_id": "b6bbadd9-aa46-4ab3-a301-a0cafe57e892",
   "company_profile": {
     "name": "Storyblok",
     "website": "https://www.storyblok.com",
@@ -45,41 +45,41 @@
   "field_freshness": [
     {
       "field_name": "company_profile",
-      "last_updated": "2026-10-02T08:21:24.660201Z",
-      "last_confirmed": "2026-10-02T08:21:24.660201Z",
+      "last_updated": "2026-10-07T08:31:45.304492Z",
+      "last_confirmed": "2026-10-07T08:31:45.304492Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "positioning",
-      "last_updated": "2026-10-02T08:21:24.660201Z",
-      "last_confirmed": "2026-10-02T08:21:24.660201Z",
+      "last_updated": "2026-10-07T08:31:45.304492Z",
+      "last_confirmed": "2026-10-07T08:31:45.304492Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "analysis",
-      "last_updated": "2026-10-02T08:21:24.660201Z",
-      "last_confirmed": "2026-10-02T08:21:24.660201Z",
+      "last_updated": "2026-10-07T08:31:45.304492Z",
+      "last_confirmed": "2026-10-07T08:31:45.304492Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "feature_launches",
-      "last_updated": "2026-10-02T08:21:24.660201Z",
-      "last_confirmed": "2026-10-02T08:21:24.660201Z",
+      "last_updated": "2026-10-07T08:31:45.304492Z",
+      "last_confirmed": "2026-10-07T08:31:45.304492Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "all_sources",
-      "last_updated": "2026-10-02T08:21:24.660201Z",
-      "last_confirmed": "2026-10-02T08:21:24.660201Z",
+      "last_updated": "2026-10-07T08:31:45.304492Z",
+      "last_confirmed": "2026-10-07T08:31:45.304492Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     }
   ],
-  "created_at": "2026-10-02T08:21:24.660108Z",
-  "updated_at": "2026-10-02T08:21:24.660108Z",
+  "created_at": "2026-10-07T08:31:45.304391Z",
+  "updated_at": "2026-10-07T08:31:45.304391Z",
   "version": 1
 }

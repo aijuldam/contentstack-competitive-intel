@@ -1,6 +1,6 @@
 {
-  "id": "4792d7b4-09d2-4d63-8e14-9205686c284b",
-  "competitor_id": "b7fbc7d3-5f60-4e8c-9720-f949af73c69c",
+  "id": "26c19e92-f21b-45e4-84c4-bb2dd3a4d76e",
+  "competitor_id": "459bd541-7401-4798-8623-6822c7881074",
   "company_profile": {
     "name": "Hygraph",
     "website": "https://hygraph.com",
@@ -45,41 +45,41 @@
   "field_freshness": [
     {
       "field_name": "company_profile",
-      "last_updated": "2026-10-10T08:25:39.752514Z",
-      "last_confirmed": "2026-10-10T08:25:39.752514Z",
+      "last_updated": "2026-10-12T09:00:55.466978Z",
+      "last_confirmed": "2026-10-12T09:00:55.466978Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "positioning",
-      "last_updated": "2026-10-10T08:25:39.752514Z",
-      "last_confirmed": "2026-10-10T08:25:39.752514Z",
+      "last_updated": "2026-10-12T09:00:55.466978Z",
+      "last_confirmed": "2026-10-12T09:00:55.466978Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "analysis",
-      "last_updated": "2026-10-10T08:25:39.752514Z",
-      "last_confirmed": "2026-10-10T08:25:39.752514Z",
+      "last_updated": "2026-10-12T09:00:55.466978Z",
+      "last_confirmed": "2026-10-12T09:00:55.466978Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "feature_launches",
-      "last_updated": "2026-10-10T08:25:39.752514Z",
-      "last_confirmed": "2026-10-10T08:25:39.752514Z",
+      "last_updated": "2026-10-12T09:00:55.466978Z",
+      "last_confirmed": "2026-10-12T09:00:55.466978Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     },
     {
       "field_name": "all_sources",
-      "last_updated": "2026-10-10T08:25:39.752514Z",
-      "last_confirmed": "2026-10-10T08:25:39.752514Z",
+      "last_updated": "2026-10-12T09:00:55.466978Z",
+      "last_confirmed": "2026-10-12T09:00:55.466978Z",
       "staleness_threshold_days": 30,
       "is_stale": false
     }
   ],
-  "created_at": "2026-10-10T08:25:39.752391Z",
-  "updated_at": "2026-10-10T08:25:39.752391Z",
+  "created_at": "2026-10-12T09:00:55.466912Z",
+  "updated_at": "2026-10-12T09:00:55.466912Z",
   "version": 1
 }

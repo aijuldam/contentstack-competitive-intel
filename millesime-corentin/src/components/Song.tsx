@@ -34,7 +34,7 @@ export function Song() {
             >
               {open ? text.hideLyrics : text.readLyrics}
             </button>
-            <button type="button" className="btn btn--ghost" onClick={playFromStart} disabled={!available}>
+            <button type="button" className="btn btn--ghost" onClick={playFromStart} disabled={!available} data-audio-control>
               {text.playFromStart}
             </button>
           </div>

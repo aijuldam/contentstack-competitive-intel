@@ -13,7 +13,7 @@ const fmt = (t: number) => {
 export function Player() {
   const { available, playing, currentTime, duration, volume, toggle, seek, setVolume } = useAudio();
   return (
-    <div className="player" role="region" aria-label="Lecteur audio">
+    <div className="player" role="region" aria-label="Lecteur audio" data-audio-control>
       <button
         type="button"
         className="player__toggle"

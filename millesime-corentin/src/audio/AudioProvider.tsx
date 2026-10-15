@@ -49,6 +49,30 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // Lecture automatique : on tente dès l’ouverture. Si le navigateur refuse
+  // (son bloqué tant que le visiteur n’a pas interagi), on démarre au premier
+  // geste sur la page. Un geste sur les commandes audio est laissé à celles-ci.
+  useEffect(() => {
+    const audio = ref.current;
+    if (!audio) return;
+    const events = ['pointerdown', 'keydown', 'touchend'] as const;
+    const detach = () => events.forEach((type) => window.removeEventListener(type, onGesture, true));
+    function onGesture(e: Event) {
+      detach();
+      const target = e.target as Element | null;
+      if (target?.closest?.('[data-audio-control]')) return;
+      if (audio && audio.paused && audio.currentTime === 0) void audio.play().catch(() => undefined);
+    }
+    let active = true;
+    audio.play().then(detach, () => {
+      if (active) events.forEach((type) => window.addEventListener(type, onGesture, true));
+    });
+    return () => {
+      active = false;
+      detach();
+    };
+  }, []);
+
   const available = status !== 'missing';
 
   const toggle = useCallback(() => {

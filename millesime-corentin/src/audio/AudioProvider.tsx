@@ -38,11 +38,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     fetch(audioUrl, { method: 'HEAD' })
       .then((res) => {
         const type = res.headers.get('content-type') ?? '';
-        if (!cancelled && (!res.ok || type.includes('text/html'))) setStatus('missing');
+        // Seul un 404 ou une page HTML à la place du MP3 signale un fichier absent.
+        // Un hébergeur qui refuse HEAD ne doit pas désactiver la lecture : l’élément
+        // <audio> signalera lui-même une vraie erreur de chargement.
+        if (!cancelled && (res.status === 404 || type.includes('text/html'))) setStatus('missing');
       })
-      .catch(() => {
-        if (!cancelled) setStatus('missing');
-      });
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };

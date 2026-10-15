@@ -44,10 +44,14 @@ export const photos: Photo[] = [
   photo('lyon-hongrie-14', 'lyon-hongrie', 'Corentin tenant une bouteille de champagne', 'center 30%'),
   photo('lyon-hongrie-15', 'lyon-hongrie', 'Corentin tenant un nouveau-né dans ses bras', 'center 40%'),
 
-  // Oléron : 3 emplacements.
-  photo('oleron-01', 'oleron', 'Souvenir de Corentin, Oléron, photo 1 sur 3'),
-  photo('oleron-02', 'oleron', 'Souvenir de Corentin, Oléron, photo 2 sur 3'),
-  photo('oleron-03', 'oleron', 'Souvenir de Corentin, Oléron, photo 3 sur 3'),
+  // Oléron : 7 photos, dans l’ordre.
+  photo('oleron-01', 'oleron', 'Corentin tout petit sur la plage, lunettes de soleil et seau à la main', 'center 30%'),
+  photo('oleron-02', 'oleron', 'Corentin tout petit sur le sable, en veste en jean et lunettes de soleil', 'center 30%'),
+  photo('oleron-03', 'oleron', 'Corentin enfant dans les dunes, un ballon dans les bras', '60% 40%'),
+  photo('oleron-04', 'oleron', 'Corentin adolescent sur la plage, l’air songeur', '60% 40%'),
+  photo('oleron-05', 'oleron', 'Corentin adolescent perché sur un poteau en bois, au bord des dunes', '40% 50%'),
+  photo('oleron-06', 'oleron', 'Corentin sur la plage, casquette à l’envers et sac sur l’épaule', 'center 15%'),
+  photo('oleron-07', 'oleron', 'Corentin souriant devant des cabanes colorées et des bateaux à marée basse', '70% 50%'),
 
   // Voyages : 3 emplacements.
   photo('voyages-01', 'voyages', 'Souvenir de Corentin, Voyages, photo 1 sur 3'),

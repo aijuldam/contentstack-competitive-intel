@@ -71,7 +71,7 @@ export interface MemoryCategory {
   title: string;
   subtitle: string;
   text: string;
-  layout: 'mosaic' | 'left' | 'right' | 'row';
+  layout: 'mosaic' | 'feature' | 'left' | 'right' | 'row';
 }
 
 // Exactement trois catégories, dans l’ordre d’affichage.
@@ -90,7 +90,7 @@ export const memoryCategories: MemoryCategory[] = [
     title: 'Oléron',
     subtitle: 'La douceur',
     text: 'L’été avec les parents. L’air de l’île, le temps qui ralentit et le plaisir d’être ensemble.',
-    layout: 'right',
+    layout: 'feature',
   },
   {
     id: 'voyages',

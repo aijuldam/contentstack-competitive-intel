@@ -25,10 +25,10 @@ for (const file of scanned) {
     });
 }
 
-// 2. Répartition des photos : 1 portrait, 15 Lyon & Hongrie, 3 Oléron, 3 Voyages.
+// 2. Répartition des photos : 1 portrait, 15 Lyon & Hongrie, 7 Oléron, 3 Voyages.
 const photosSrc = readFileSync(join(root, 'src/content/photos.ts'), 'utf8');
 const entries = [...photosSrc.matchAll(/photo\('([a-z0-9-]+)', '([a-z-]+)'/g)].map((m) => ({ id: m[1], cat: m[2] }));
-const expectedCounts = { portrait: 1, 'lyon-hongrie': 15, oleron: 3, voyages: 3 };
+const expectedCounts = { portrait: 1, 'lyon-hongrie': 15, oleron: 7, voyages: 3 };
 for (const [cat, n] of Object.entries(expectedCounts)) {
   const found = entries.filter((e) => e.cat === cat).length;
   if (found !== n) errors.push(`Catégorie ${cat} : ${found} photo(s), ${n} attendue(s)`);

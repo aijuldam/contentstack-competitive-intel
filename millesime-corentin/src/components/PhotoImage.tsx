@@ -6,7 +6,7 @@ export function PhotoImage({ photo, eager = false }: { photo: Photo; eager?: boo
   const [failed, setFailed] = useState(false);
 
   if (failed) {
-    const number = photo.id.replace('photo-', '');
+    const number = photo.id.split('-').pop();
     return (
       <span className="photo-placeholder" role="img" aria-label={photo.alt}>
         <span className="photo-placeholder__mark" aria-hidden="true">✦</span>

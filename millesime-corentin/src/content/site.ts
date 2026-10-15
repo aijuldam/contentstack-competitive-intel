@@ -71,7 +71,7 @@ export interface MemoryCategory {
   title: string;
   subtitle: string;
   text: string;
-  layout: 'left' | 'right' | 'row';
+  layout: 'mosaic' | 'left' | 'right' | 'row';
 }
 
 // Exactement trois catégories, dans l’ordre d’affichage.
@@ -82,7 +82,7 @@ export const memoryCategories: MemoryCategory[] = [
     title: 'Lyon & Hongrie',
     subtitle: 'Les attaches',
     text: 'Des lieux qui comptent, des retrouvailles et des moments à garder près de soi.',
-    layout: 'left',
+    layout: 'mosaic',
   },
   {
     id: 'oleron',

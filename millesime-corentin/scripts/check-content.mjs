@@ -25,14 +25,15 @@ for (const file of scanned) {
     });
 }
 
-// 2. Exactement dix photos, réparties 1 portrait + 3 x 3 souvenirs.
+// 2. Répartition des photos : 1 portrait, 15 Lyon & Hongrie, 3 Oléron, 3 Voyages.
 const photosSrc = readFileSync(join(root, 'src/content/photos.ts'), 'utf8');
-const ids = [...photosSrc.matchAll(/id: '(photo-\d+)'/g)].map((m) => m[1]);
-const cats = [...photosSrc.matchAll(/category: '([a-z-]+)'/g)].map((m) => m[1]);
-const expectedIds = Array.from({ length: 10 }, (_, i) => `photo-${String(i + 1).padStart(2, '0')}`);
-if (JSON.stringify(ids) !== JSON.stringify(expectedIds)) errors.push(`Photos attendues : ${expectedIds.join(', ')}`);
-const expectedCats = ['portrait', ...Array(3).fill('lyon-hongrie'), ...Array(3).fill('oleron'), ...Array(3).fill('voyages')];
-if (JSON.stringify(cats) !== JSON.stringify(expectedCats)) errors.push('Répartition des catégories incorrecte');
+const entries = [...photosSrc.matchAll(/photo\('([a-z0-9-]+)', '([a-z-]+)'/g)].map((m) => ({ id: m[1], cat: m[2] }));
+const expectedCounts = { portrait: 1, 'lyon-hongrie': 15, oleron: 3, voyages: 3 };
+for (const [cat, n] of Object.entries(expectedCounts)) {
+  const found = entries.filter((e) => e.cat === cat).length;
+  if (found !== n) errors.push(`Catégorie ${cat} : ${found} photo(s), ${n} attendue(s)`);
+}
+if (new Set(entries.map((e) => e.id)).size !== entries.length) errors.push('Identifiants de photos en double');
 
 // 3. Exactement trois catégories de souvenirs.
 const siteSrc = readFileSync(join(root, 'src/content/site.ts'), 'utf8');
@@ -49,4 +50,4 @@ if (errors.length) {
   console.error('Vérification du contenu : échec\n' + errors.map((e) => `  - ${e}`).join('\n'));
   process.exit(1);
 }
-console.log(`Vérification du contenu : OK (${scanned.length} fichiers, 10 photos, 3 catégories)`);
+console.log(`Vérification du contenu : OK (${scanned.length} fichiers, ${entries.length} photos, 3 catégories)`);

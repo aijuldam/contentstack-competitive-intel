@@ -382,6 +382,7 @@ h2 {
 
 .terroir__item {
   margin: 0;
+  min-width: 0;
 }
 
 .terroir__item figcaption {
@@ -392,6 +393,7 @@ h2 {
 }
 
 .photo-button {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
@@ -405,6 +407,8 @@ h2 {
 
 .photo-button img,
 .photo-button .photo-placeholder {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -413,6 +417,47 @@ h2 {
 
 .photo-button:hover img {
   transform: scale(1.03);
+}
+
+/* Mosaïque (catégorie à nombreuses photos), lecture dans l’ordre */
+.terroir--mosaic .terroir__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.terroir--mosaic .photo-button {
+  aspect-ratio: 1;
+}
+
+.terroir--mosaic .terroir__item:nth-child(5n + 1) {
+  grid-column: span 2;
+}
+
+@media (min-width: 860px) {
+  .terroir--mosaic .terroir__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: dense;
+    gap: 20px;
+  }
+
+  .terroir--mosaic .terroir__item:nth-child(5n + 1) {
+    grid-column: auto;
+  }
+
+  .terroir--mosaic .terroir__item:nth-child(12n + 1) {
+    grid-column: 1 / span 2;
+    grid-row: span 2;
+  }
+
+  .terroir--mosaic .terroir__item:nth-child(12n + 7) {
+    grid-column: 2 / span 2;
+    grid-row: span 2;
+  }
+
+  .terroir--mosaic .terroir__item:nth-child(6n + 1) .photo-button {
+    aspect-ratio: auto;
+    height: 100%;
+  }
 }
 
 @media (min-width: 860px) {
@@ -429,7 +474,7 @@ h2 {
 
   .terroir--left .terroir__grid,
   .terroir--right .terroir__grid {
-    grid-template-columns: 3fr 2fr;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     grid-template-rows: 1fr 1fr;
     gap: 20px;
   }
@@ -440,7 +485,7 @@ h2 {
   }
 
   .terroir--right .terroir__grid {
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   }
 
   .terroir--right .terroir__item:first-child {
@@ -465,7 +510,7 @@ h2 {
   }
 
   .terroir--row .terroir__grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
     align-items: start;
   }

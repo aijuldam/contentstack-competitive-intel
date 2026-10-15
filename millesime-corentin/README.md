@@ -14,13 +14,13 @@ npm run build    # vérifications + build dans dist/
 `npm run build` lance d’abord `npm run check`, qui vérifie :
 
 - qu’il n’y a aucun tiret cadratin dans les textes, la configuration et ce README ;
-- qu’il y a exactement dix photos (un portrait et trois groupes de trois) ;
+- la répartition des photos (1 portrait, 15 Lyon & Hongrie, 3 Oléron, 3 Voyages) ;
 - que les catégories sont exactement « Lyon & Hongrie », « Oléron » et « Voyages ».
 
 ## Organisation de la page
 
 1. Ouverture (l’étiquette du millésime).
-2. Portrait (photo 01).
+2. Portrait.
 3. Les terroirs du millésime : trois catégories de souvenirs, avec des boutons
    qui font défiler la page jusqu’à chacune.
 4. L’avis des experts.
@@ -32,21 +32,23 @@ Un lecteur audio persistant reste en bas de l’écran. Il n’existe qu’un se
 
 ## Photos
 
-Déposez les fichiers dans `public/photos/` avec exactement ces noms :
+Les fichiers sont dans `public/photos/` :
 
 | Fichier | Emplacement |
 | --- | --- |
-| `photo-01.jpg` | Portrait (après l’ouverture) |
-| `photo-02.jpg`, `photo-03.jpg`, `photo-04.jpg` | Lyon & Hongrie |
-| `photo-05.jpg`, `photo-06.jpg`, `photo-07.jpg` | Oléron |
-| `photo-08.jpg`, `photo-09.jpg`, `photo-10.jpg` | Voyages |
+| `portrait.jpg` | Portrait (après l’ouverture) |
+| `lyon-hongrie-01.jpg` à `lyon-hongrie-15.jpg` | Lyon & Hongrie (15 photos, dans l’ordre) |
+| `oleron-01.jpg` à `oleron-03.jpg` | Oléron (à fournir) |
+| `voyages-01.jpg` à `voyages-03.jpg` | Voyages (à fournir) |
 
 Tant qu’un fichier manque, un placeholder élégant s’affiche à sa place.
+Pour un rendu léger, redimensionnez les photos à 1600 px de côté maximum.
 
 Les textes alternatifs, légendes et cadrages se modifient dans
 `src/content/photos.ts` (champs `alt`, `caption` et `position`).
-Une légende vide n’affiche rien. Les neuf souvenirs s’ouvrent dans une
-visionneuse qui affiche la catégorie et la légende.
+L’ordre du tableau est l’ordre d’affichage. Une légende vide n’affiche rien.
+Toutes les photos de souvenirs s’ouvrent dans une visionneuse qui affiche
+la catégorie et la légende, dans l’ordre des catégories.
 
 ## Musique
 

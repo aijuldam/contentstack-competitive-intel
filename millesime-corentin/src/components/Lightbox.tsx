@@ -10,7 +10,7 @@ interface Props {
   onClose: () => void;
 }
 
-// Visionneuse des neuf photos de souvenirs, dans l’ordre des catégories.
+// Visionneuse de toutes les photos de souvenirs, dans l’ordre des catégories.
 // N’agit jamais sur la musique.
 export function Lightbox({ photos, index, onChange, onClose }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);

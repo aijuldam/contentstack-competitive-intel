@@ -12,7 +12,7 @@ import { photos } from './content/photos';
 import { memoryCategories, site } from './content/site';
 
 export default function App() {
-  // Les neuf souvenirs, triés dans l’ordre des catégories.
+  // Les souvenirs, triés dans l’ordre des catégories.
   const memories = useMemo(
     () => memoryCategories.flatMap((cat) => photos.filter((p) => p.category === cat.id)),
     [],

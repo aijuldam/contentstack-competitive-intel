@@ -14,7 +14,7 @@ npm run build    # vérifications + build dans dist/
 `npm run build` lance d’abord `npm run check`, qui vérifie :
 
 - qu’il n’y a aucun tiret cadratin dans les textes, la configuration et ce README ;
-- la répartition des photos (1 portrait, 15 Lyon & Hongrie, 7 Oléron, 3 Voyages) ;
+- la répartition des photos (1 portrait, 15 Lyon & Hongrie, 7 Oléron, 6 Voyages) ;
 - que les catégories sont exactement « Lyon & Hongrie », « Oléron » et « Voyages ».
 
 ## Organisation de la page
@@ -39,9 +39,9 @@ Les fichiers sont dans `public/photos/` :
 | `portrait.jpg` | Portrait (après l’ouverture) |
 | `lyon-hongrie-01.jpg` à `lyon-hongrie-15.jpg` | Lyon & Hongrie (15 photos, dans l’ordre) |
 | `oleron-01.jpg` à `oleron-07.jpg` | Oléron (7 photos, dans l’ordre) |
-| `voyages-01.jpg` à `voyages-03.jpg` | Voyages (à fournir) |
+| `voyages-01.jpg` à `voyages-06.jpg` | Voyages (6 photos, dans l’ordre) |
 
-Tant qu’un fichier manque, un placeholder élégant s’affiche à sa place.
+Si un fichier manque, un placeholder élégant s’affiche à sa place.
 Pour un rendu léger, redimensionnez les photos à 1600 px de côté maximum.
 
 Les textes alternatifs, légendes et cadrages se modifient dans

@@ -53,10 +53,13 @@ export const photos: Photo[] = [
   photo('oleron-06', 'oleron', 'Corentin sur la plage, casquette à l’envers et sac sur l’épaule', 'center 15%'),
   photo('oleron-07', 'oleron', 'Corentin souriant devant des cabanes colorées et des bateaux à marée basse', '70% 50%'),
 
-  // Voyages : 3 emplacements.
-  photo('voyages-01', 'voyages', 'Souvenir de Corentin, Voyages, photo 1 sur 3'),
-  photo('voyages-02', 'voyages', 'Souvenir de Corentin, Voyages, photo 2 sur 3'),
-  photo('voyages-03', 'voyages', 'Souvenir de Corentin, Voyages, photo 3 sur 3'),
+  // Voyages : 6 photos, dans l’ordre.
+  photo('voyages-01', 'voyages', 'Corentin adolescent, coiffé d’un chapeau de paille, tenant un bébé crocodile', 'center 30%'),
+  photo('voyages-02', 'voyages', 'Corentin souriant sur un bateau, devant la statue de la Liberté à New York', '65% 50%'),
+  photo('voyages-03', 'voyages', 'Corentin debout sur le dos d’un grand lion de bronze, à Londres', '70% 35%'),
+  photo('voyages-04', 'voyages', 'Trois amis souriants au milieu d’une foule, en plein air', 'center 35%'),
+  photo('voyages-05', 'voyages', 'Corentin devant un château en ruine au bord des falaises, face à la mer', '75% 40%'),
+  photo('voyages-06', 'voyages', 'Corentin en chapeau conique, devant un paysage de volcans au lever du jour', '65% 40%'),
 ];
 
 export const photoUrl = (p: Photo) => `${import.meta.env.BASE_URL}${p.src}`;

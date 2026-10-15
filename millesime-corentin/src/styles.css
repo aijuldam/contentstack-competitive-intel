@@ -465,6 +465,72 @@ h2 {
   }
 }
 
+/* Composition « voyage » : six photos, une verticale puis des paysages */
+.terroir--journey .terroir__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.terroir--journey .photo-button {
+  aspect-ratio: 1;
+}
+
+.terroir--journey .terroir__item:nth-child(-n + 3),
+.terroir--journey .terroir__item:nth-child(6) {
+  grid-column: span 2;
+}
+
+.terroir--journey .terroir__item:first-child .photo-button {
+  aspect-ratio: 4 / 5;
+}
+
+.terroir--journey .terroir__item:nth-child(2) .photo-button,
+.terroir--journey .terroir__item:nth-child(3) .photo-button,
+.terroir--journey .terroir__item:nth-child(6) .photo-button {
+  aspect-ratio: 3 / 2;
+}
+
+@media (min-width: 860px) {
+  .terroir--journey .terroir__head {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .terroir--journey .terroir__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .terroir--journey .terroir__item:nth-child(n) {
+    grid-column: auto;
+  }
+
+  .terroir--journey .terroir__item:first-child {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .terroir--journey .terroir__item:nth-child(2),
+  .terroir--journey .terroir__item:nth-child(3) {
+    grid-column: 2 / span 2;
+  }
+
+  .terroir--journey .terroir__item:first-child .photo-button {
+    aspect-ratio: auto;
+    height: 100%;
+  }
+
+  .terroir--journey .terroir__item:nth-child(2) .photo-button,
+  .terroir--journey .terroir__item:nth-child(3) .photo-button {
+    aspect-ratio: 2 / 1;
+  }
+
+  .terroir--journey .terroir__item:nth-child(n + 4) .photo-button {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 /* Mosaïque (catégorie à nombreuses photos), lecture dans l’ordre */
 .terroir--mosaic .terroir__grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));

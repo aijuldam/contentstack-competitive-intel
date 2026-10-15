@@ -71,7 +71,7 @@ export interface MemoryCategory {
   title: string;
   subtitle: string;
   text: string;
-  layout: 'mosaic' | 'feature' | 'left' | 'right' | 'row';
+  layout: 'mosaic' | 'feature' | 'journey' | 'left' | 'right' | 'row';
 }
 
 // Exactement trois catégories, dans l’ordre d’affichage.
@@ -98,6 +98,6 @@ export const memoryCategories: MemoryCategory[] = [
     title: 'Voyages',
     subtitle: 'Les échappées',
     text: 'Changer de décor, prendre le temps et revenir avec quelques souvenirs de plus.',
-    layout: 'row',
+    layout: 'journey',
   },
 ];

@@ -12,9 +12,11 @@ const SECTION_LABELS: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
   [/^verse\s*(\d+)?$/i, (m) => (m[1] ? `Couplet ${m[1]}` : 'Couplet')],
   [/^pre[\s-]?chorus$/i, () => 'Pré-refrain'],
   [/^post[\s-]?chorus$/i, () => 'Après le refrain'],
+  [/^final\s+chorus$/i, () => 'Dernier refrain'],
   [/^(chorus|hook)(\s*\d+)?$/i, () => 'Refrain'],
   [/^bridge$/i, () => 'Pont'],
-  [/^outro$/i, () => 'Final'],
+  // « [Outro - Group Call and Response] » : on garde seulement « Final ».
+  [/^outro\b.*$/i, () => 'Final'],
   [/^intro$/i, () => 'Introduction'],
   [/^instrumental(\s.*)?$/i, () => 'Instrumental'],
   [/^end$/i, () => 'Fin'],
@@ -58,7 +60,8 @@ export function parseLyrics(raw: string): Stanza[] {
       if (current && current.lines.length) flush();
     } else {
       if (!current) current = { lines: [] };
-      current.lines.push(removeEmDash(line));
+      // Espace insécable avant ! ? : ; pour éviter une ponctuation seule en début de ligne.
+      current.lines.push(removeEmDash(line).replace(/ ([!?:;])/g, '\u00A0$1'));
     }
   }
   flush();

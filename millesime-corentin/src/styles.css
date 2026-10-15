@@ -794,6 +794,8 @@ h2 {
 
 .lyrics__line {
   display: block;
+  padding-left: 1em;
+  text-indent: -1em;
 }
 
 .lyrics__heading {

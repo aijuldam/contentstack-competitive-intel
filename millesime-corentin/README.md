@@ -50,7 +50,8 @@ visionneuse qui affiche la catégorie et la légende.
 
 ## Musique
 
-Déposez la chanson dans `public/audio/chanson-corentin.mp3`
+La chanson (« Corentin, trente ans et du bon vin ») est dans
+`public/audio/chanson-corentin.mp3`. Pour la remplacer, déposez un autre fichier sous ce nom
 (le chemin se change dans `src/content/song.ts`, champ `audioSrc`).
 Si le fichier est absent, les boutons de lecture sont désactivés.
 
@@ -71,10 +72,11 @@ Deuxième ligne
 };
 ```
 
-- Collez les paroles exactes entre les deux accents graves.
+- Les paroles actuelles sont celles de la chanson Suno. Pour les changer, collez le nouveau texte entre les deux accents graves.
 - Gardez une ligne vide entre les couplets.
 - Les repères Suno sont affichés en français : `[Verse 1]` devient « Couplet 1 »,
-  `[Chorus]` « Refrain », `[Bridge]` « Pont », `[Outro]` « Final ».
+  `[Chorus]` « Refrain », `[Final Chorus]` « Dernier refrain », `[Bridge]` « Pont »,
+  `[Outro]` (et ses variantes, par ex. `[Outro - Group Call and Response]`) « Final ».
   Les paroles chantées ne sont pas modifiées.
 - Un éventuel tiret cadratin dans les paroles est remplacé à l’affichage par une virgule.
 - Tant que `lyrics` est vide, le site affiche « Les paroles arrivent bientôt ».
